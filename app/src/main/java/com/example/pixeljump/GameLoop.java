@@ -2,8 +2,8 @@ package com.example.pixeljump;
 
 public class GameLoop implements Runnable {
 
-    private Thread gameThread;
-    private GamePanel gamePanel;
+    private final Thread gameThread;
+    private final GamePanel gamePanel;
 
     public GameLoop(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -16,18 +16,10 @@ public class GameLoop implements Runnable {
         long lastFPScheck = System.currentTimeMillis();
         int fps = 0;
 
-        long lastDelta = System.nanoTime();
-        long nanoSec = 1_000_000_000;
-
         while (true) {
-
-            long nowDelta = System.nanoTime();
-            double timeSinceLastDelta = nowDelta - lastDelta;
-            double delta = timeSinceLastDelta / nanoSec;
 
             gamePanel.updateAnimation();
             gamePanel.render();
-            lastDelta = nowDelta;
 
             fps++;
 

@@ -1,21 +1,20 @@
 package com.example.pixeljump;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
-public class CharactersMotion {
+public class CharacterMotion {
 
     private final Bitmap spriteSheet;
     private final int motionNumber;
     private final Bitmap[] sprites;
 
-    public CharactersMotion(Bitmap spriteSheet, int motionNumber, int imageHeight, int motionsWidth) {
+    public CharacterMotion(Bitmap spriteSheet, int motionNumber, int imageHeight, int motionsWidth) {
         this.spriteSheet = spriteSheet;
         this.motionNumber = motionNumber;
 
         sprites = new Bitmap[motionNumber];
 
-        for (int i = 0; i < sprites.length; i++)
+        for (int i = 0; i < motionNumber; i++)
             sprites[i] = getScaledBitmap(Bitmap.createBitmap(spriteSheet, motionsWidth * i, 0, motionsWidth, imageHeight));
     }
 
@@ -25,8 +24,11 @@ public class CharactersMotion {
     }
 
     public Bitmap getSprite(int xPos) {
+//        TODO
         if (xPos > motionNumber - 1)
-            return sprites[motionNumber - 1];
+            System.out.println("out of range 'getSprite'");
+//            return sprites[motionNumber - 1];
+
 
         return sprites[xPos];
     }
