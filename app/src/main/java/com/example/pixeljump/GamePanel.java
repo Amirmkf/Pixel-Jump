@@ -5,19 +5,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
-import java.util.Random;
+import com.example.pixeljump.blocks.Blocks;
+import com.example.pixeljump.characters.MainCharacters;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final SurfaceHolder holder;
     private float x, y;
-    private final CharacterMotion attackMotion;
+
     private final GameLoop gameLoop;
     private int playerAniIndexX = 0;
     private int aniTick;
@@ -26,32 +26,31 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private float velocityY;
     private Bitmap groundBitmap;
-    private Bitmap charecterBitmap;
+    private Bitmap attackBitmap;
+    MainCharacters mainCharacters;
+    Blocks block;
 
     public GamePanel(Context context) {
         super(context);
+
+        this.mainCharacters = new MainCharacters(context);
+        this.block = new Blocks(context);
 
         holder = getHolder();
         holder.addCallback(this);
 
         gameLoop = new GameLoop(this);
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
-        Bitmap spriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.owlet_attack, options);
-
-        attackMotion = new CharacterMotion(spriteSheet, 4, 32, 73);
-
         groundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain);
         groundBitmap = Bitmap.createScaledBitmap(groundBitmap, groundBitmap.getWidth() * 2, groundBitmap.getHeight() * 2, false);
 
-        charecterBitmap = attackMotion.getSprite(playerAniIndexX);
+        attackBitmap = block.blockFall().getSprite(playerAniIndexX);
+
     }
 
     public void render() {
         Canvas background = holder.lockCanvas();
         background.drawColor(Color.BLACK);
-
 
         int groundWidth = groundBitmap.getWidth();
         int groundHeight = groundBitmap.getHeight();
@@ -64,10 +63,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
         }
 
-        charecterBitmap = attackMotion.getSprite(playerAniIndexX);
+        attackBitmap =block.blockFall().getSprite(playerAniIndexX);
 
 //        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
-        background.drawBitmap(charecterBitmap, x, y, null);
+        background.drawBitmap(attackBitmap, x, y, null);
 
         holder.unlockCanvasAndPost(background);
     }
