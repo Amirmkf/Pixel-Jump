@@ -34,7 +34,7 @@ public class CharacterMotion {
     }
 
     private Bitmap getScaledBitmap(Bitmap bitmap) {
-        return Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 7, bitmap.getHeight() * 7, false);
+        return Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 8, bitmap.getHeight() * 8, false);
     }
 
 }

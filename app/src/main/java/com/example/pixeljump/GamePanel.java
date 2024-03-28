@@ -41,7 +41,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         Bitmap spriteSheet = BitmapFactory.decodeResource(getResources(), R.drawable.owlet_attack, options);
 
         attackMotion = new CharacterMotion(spriteSheet, 4, 32, 73);
+
         groundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain);
+        groundBitmap = Bitmap.createScaledBitmap(groundBitmap, groundBitmap.getWidth() * 2, groundBitmap.getHeight() * 2, false);
+
         charecterBitmap = attackMotion.getSprite(playerAniIndexX);
     }
 
@@ -56,7 +59,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         int numTiles = (getWidth() / groundWidth) + 2;
 
         for (int i = 0; i < numTiles; i++) {
-            int left = i * groundWidth;
+            int left = i * (groundWidth + 15);
 
             background.drawBitmap(groundBitmap, left, getHeight() - groundHeight, null);
         }
@@ -69,7 +72,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         holder.unlockCanvasAndPost(background);
     }
 
-    public void updateAnimation() {//10 >= 10
+    public void updateAnimation() {
         aniTick++;
         if (aniTick >= aniDelay) {
             aniTick = 0;
@@ -79,12 +82,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         }
 
 
-        float gravity = 0.5f;
-        velocityY += gravity;
+//        float gravity = 0.5f;
+        velocityY += 0.5f;
 
         y += velocityY;
 
-        if (y >= getHeight() - 360) {
+        if (y >= getHeight() - groundBitmap.getHeight() - charecterBitmap.getHeight() - 10) {
             y = getHeight() - groundBitmap.getHeight() - charecterBitmap.getHeight();
             velocityY = 0;
         }
