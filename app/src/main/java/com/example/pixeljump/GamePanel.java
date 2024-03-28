@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,7 +18,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final SurfaceHolder holder;
     private float x, y;
 
-    private final GameLoop gameLoop;
     private int playerAniIndexX = 0;
     private int aniTick;
     private final int aniDelay = 10;
@@ -38,7 +38,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         holder = getHolder();
         holder.addCallback(this);
 
-        gameLoop = new GameLoop(this);
 
 //        groundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain);
 //        groundBitmap = Bitmap.createScaledBitmap(groundBitmap, groundBitmap.getWidth() * 2, groundBitmap.getHeight() * 2, false);
@@ -71,6 +70,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 //        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
         background.drawBitmap(attackBitmap, x, y, null);
 
+
         holder.unlockCanvasAndPost(background);
     }
 
@@ -98,7 +98,34 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        gameLoop.startGameLoop();
+
+        Handler handler = new Handler();
+        Runnable updateRunnable = new Runnable() {
+
+            long lastFPScheck = System.currentTimeMillis();
+            int fps = 0;
+
+            @Override
+            public void run() {
+
+                updateAnimation();
+                render();
+
+                fps++;
+
+                long now = System.currentTimeMillis();
+                if (now - lastFPScheck >= 1000) {
+                    System.out.println("FPS: " + fps);
+                    fps = 0;
+                    lastFPScheck += 1000;
+                }
+
+                // Schedule next update
+                handler.postDelayed(this, 1);
+            }
+        };
+
+        handler.post(updateRunnable);
     }
 
 
