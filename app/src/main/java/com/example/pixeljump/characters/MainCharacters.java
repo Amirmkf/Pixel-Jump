@@ -7,52 +7,79 @@ import android.graphics.BitmapFactory;
 import com.example.pixeljump.R;
 import com.example.pixeljump.utils.Motion;
 
-public class MainCharacters  {
-    private Context context;
-    private BitmapFactory.Options options = new BitmapFactory.Options();
+public class MainCharacters {
+    private final Context context;
+    private final BitmapFactory.Options options = new BitmapFactory.Options();
 
-    public Motion attackMotion;
-    public Motion jumpMotion;
-    public Motion damageMotion;
-    public Motion idealMotion;
-    public Motion deadMotion;
+    private Motion attackMotion;
+    private Motion jumpMotion;
+    private Motion damageMotion;
+    private Motion idealMotion;
+    private Motion deadMotion;
+
 
     public MainCharacters(Context context) {
         this.context = context;
         options.inScaled = false;
 
-        attackMotion = attackMotion();
+        setAttackMotion();
+        setDamageMotion();
+        setDeadMotion();
+        setIdealMotion();
+        setJumpMotion();
     }
 
 
-    private Motion jumpMotion() {
+    private void setJumpMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_jump, options);
 
-        return new Motion(spriteSheet, 8, 53, 30);
+        this.jumpMotion = new Motion(spriteSheet, 8, 53, 30);
     }
 
 
-    private Motion attackMotion() {
+    private void setAttackMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_attack, options);
 
-        return new Motion(spriteSheet, 4, 32, 73);
+        this.attackMotion = new Motion(spriteSheet, 4, 32, 73);
     }
 
-    private Motion damageMotion() {
+    private void setDamageMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_attack, options);
 
-        return new Motion(spriteSheet, 4, 32, 32);
+        this.damageMotion = new Motion(spriteSheet, 4, 32, 32);
     }
 
-    private Motion idealMotion() {
+    private void setIdealMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_attack, options);
 
-        return new Motion(spriteSheet, 4, 32, 32);
+        this.idealMotion = new Motion(spriteSheet, 4, 32, 32);
     }
 
-    private Motion deadMotion() {
+    private void setDeadMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_attack, options);
 
-        return new Motion(spriteSheet, 8, 32, 29);
+        this.deadMotion = new Motion(spriteSheet, 8, 32, 29);
     }
+
+
+    public Motion getAttackMotion() {
+        return attackMotion;
+    }
+
+    public Motion getJumpMotion() {
+        return jumpMotion;
+    }
+
+    public Motion getDamageMotion() {
+        return damageMotion;
+    }
+
+    public Motion getIdealMotion() {
+        return idealMotion;
+    }
+
+    public Motion getDeadMotion() {
+        return deadMotion;
+    }
+
 }

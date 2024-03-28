@@ -27,8 +27,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private float velocityY;
     private Bitmap groundBitmap;
     private Bitmap attackBitmap;
-    MainCharacters mainCharacters;
-    Blocks block;
+    private final MainCharacters mainCharacters;
+    private final Blocks block;
 
     public GamePanel(Context context) {
         super(context);
@@ -41,16 +41,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         gameLoop = new GameLoop(this);
 
-        groundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain);
-        groundBitmap = Bitmap.createScaledBitmap(groundBitmap, groundBitmap.getWidth() * 2, groundBitmap.getHeight() * 2, false);
+//        groundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain);
+//        groundBitmap = Bitmap.createScaledBitmap(groundBitmap, groundBitmap.getWidth() * 2, groundBitmap.getHeight() * 2, false);
 
-        attackBitmap = block.blockFall().getSprite(playerAniIndexX);
+        groundBitmap = block.blockFall().getSprite(playerAniIndexX);
+
+        attackBitmap = mainCharacters.getAttackMotion().getSprite(playerAniIndexX);
 
     }
 
     public void render() {
         Canvas background = holder.lockCanvas();
         background.drawColor(Color.BLACK);
+
+        groundBitmap = block.blockFall().getSprite(playerAniIndexX);
 
         int groundWidth = groundBitmap.getWidth();
         int groundHeight = groundBitmap.getHeight();
@@ -63,7 +67,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
         }
 
-        attackBitmap =block.blockFall().getSprite(playerAniIndexX);
+        attackBitmap = mainCharacters.getAttackMotion().getSprite(playerAniIndexX);
 
 //        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
         background.drawBitmap(attackBitmap, x, y, null);
@@ -86,8 +90,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         y += velocityY;
 
-        if (y >= (float) getHeight() / 2 - groundBitmap.getHeight() - 10) {
-            y = (float) getHeight() / 2 - groundBitmap.getHeight();
+        if (y >= (float) getHeight() / 2 - attackBitmap.getHeight() - 10) {
+            y = (float) getHeight() / 2 - attackBitmap.getHeight();
             velocityY = 0;
         }
     }
