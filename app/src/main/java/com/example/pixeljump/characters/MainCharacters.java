@@ -14,7 +14,7 @@ public class MainCharacters {
     private Motion attackMotion;
     private Motion jumpMotion;
     private Motion damageMotion;
-    private Motion idealMotion;
+    private Motion idleMotion;
     private Motion deadMotion;
 
 
@@ -25,7 +25,7 @@ public class MainCharacters {
         setAttackMotion();
         setDamageMotion();
         setDeadMotion();
-        setIdealMotion();
+        setIdleMotion();
         setJumpMotion();
     }
 
@@ -44,19 +44,19 @@ public class MainCharacters {
     }
 
     private void setDamageMotion() {
-        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_attack, options);
+        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_hurt, options);
 
         this.damageMotion = new Motion(spriteSheet, 4, 32, 32);
     }
 
-    private void setIdealMotion() {
-        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_attack, options);
+    private void setIdleMotion() {
+        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_idle, options);
 
-        this.idealMotion = new Motion(spriteSheet, 4, 32, 32);
+        this.idleMotion = new Motion(spriteSheet, 4, 32, 32);
     }
 
     private void setDeadMotion() {
-        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_attack, options);
+        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.owlet_death, options);
 
         this.deadMotion = new Motion(spriteSheet, 8, 32, 29);
     }
@@ -74,8 +74,8 @@ public class MainCharacters {
         return damageMotion;
     }
 
-    public Motion getIdealMotion() {
-        return idealMotion;
+    public Motion getIdleMotion() {
+        return idleMotion;
     }
 
     public Motion getDeadMotion() {

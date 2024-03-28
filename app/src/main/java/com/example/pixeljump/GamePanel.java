@@ -2,7 +2,6 @@ package com.example.pixeljump;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.view.MotionEvent;
@@ -46,7 +45,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         groundBitmap = block.blockFall().getSprite(playerAniIndexX);
 
-        attackBitmap = mainCharacters.getAttackMotion().getSprite(playerAniIndexX);
+        attackBitmap = mainCharacters.getIdleMotion().getSprite(playerAniIndexX);
 
     }
 
@@ -67,7 +66,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
         }
 
-        attackBitmap = mainCharacters.getAttackMotion().getSprite(playerAniIndexX);
+        attackBitmap = mainCharacters.getIdleMotion().getSprite(playerAniIndexX);
 
 //        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
         background.drawBitmap(attackBitmap, x, y, null);
