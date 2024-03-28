@@ -61,7 +61,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         for (int i = 0; i < numTiles; i++) {
             int left = i * (groundWidth + 15);
 
-            background.drawBitmap(groundBitmap, left, getHeight() - groundHeight, null);
+            background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
         }
 
         charecterBitmap = attackMotion.getSprite(playerAniIndexX);
@@ -87,8 +87,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         y += velocityY;
 
-        if (y >= getHeight() - groundBitmap.getHeight() - charecterBitmap.getHeight() - 10) {
-            y = getHeight() - groundBitmap.getHeight() - charecterBitmap.getHeight();
+        if (y >= (float) getHeight() / 2 - groundBitmap.getHeight() - 10) {
+            y = (float) getHeight() / 2 - groundBitmap.getHeight();
             velocityY = 0;
         }
     }
