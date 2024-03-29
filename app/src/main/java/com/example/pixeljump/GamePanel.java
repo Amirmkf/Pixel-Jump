@@ -8,12 +8,12 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.pixeljump.blocks.Blocks;
 import com.example.pixeljump.characters.MainCharacters;
+import com.example.pixeljump.characters.enemy.Bat;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final SurfaceHolder holder;
@@ -23,6 +23,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap groundBitmap;
     private Bitmap attackBitmap;
     private final MainCharacters mainCharacters;
+    private final Bat bat;
     private final Blocks block;
 
     private Handler handler;
@@ -33,19 +34,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         super(context);
 
         this.mainCharacters = new MainCharacters(context);
+        this.bat = new Bat(context);
         this.block = new Blocks(context);
 
         holder = getHolder();
         holder.addCallback(this);
-
-
-//        groundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain);
-//        groundBitmap = Bitmap.createScaledBitmap(groundBitmap, groundBitmap.getWidth() * 2, groundBitmap.getHeight() * 2, false);
-
-//        groundBitmap = block.getFallBlock().getSprite(playerAniIndexX);
-
-//        attackBitmap = mainCharacters.getIdleMotion().getSprite(playerAniIndexX);
-
     }
 
     public void render() {
@@ -65,7 +58,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
         }
 
-        attackBitmap = mainCharacters.getIdleMotion().getSprite();
+        attackBitmap = mainCharacters.getDamageMotion().getSprite();
 
 //        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
         background.drawBitmap(attackBitmap, x, y, null);

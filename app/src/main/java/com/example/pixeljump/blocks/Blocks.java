@@ -23,7 +23,7 @@ public class Blocks {
     }
 
     private void setDefaultBlock() {
-        Bitmap block = BitmapFactory.decodeResource(context.getResources(), R.drawable.terrain);
+        Bitmap block = BitmapFactory.decodeResource(context.getResources(), R.drawable.block_normal);
 
         defaultBlock = Bitmap.createScaledBitmap(block, block.getWidth() * 2, block.getHeight() * 2, false);
     }
