@@ -19,7 +19,7 @@ public class Blocks {
 
         setDefaultBlock();
         setFallBlock();
-        setFireBlockOff();
+        setFireBlock();
     }
 
     private void setDefaultBlock() {
@@ -36,7 +36,7 @@ public class Blocks {
         fallBlock = new Motion(spriteSheet, 4, 10, 32);
     }
 
-    private void setFireBlockOff() {
+    private void setFireBlock() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
@@ -54,7 +54,7 @@ public class Blocks {
         return fallBlock;
     }
 
-    public Motion getFireBlockOff() {
+    public Motion getFireBlock() {
         return fireBlock;
     }
 }

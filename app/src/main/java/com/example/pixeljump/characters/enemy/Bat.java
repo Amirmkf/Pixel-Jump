@@ -25,6 +25,7 @@ public class Bat {
         setDeadMotion();
         setIdleMotion();
     }
+    // خب اینجا باید یه متغییر ایجاد کنیم که اگه کارکتر روی بلاک انمی ایستاد موشن اتک داخلش ریخته شه اگه رو بلاکش نبود حالت ایدل باشه
 
 
     private void setAttackMotion() {

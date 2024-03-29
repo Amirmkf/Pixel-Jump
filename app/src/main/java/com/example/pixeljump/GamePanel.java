@@ -9,13 +9,16 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.pixeljump.blocks.Blocks;
 import com.example.pixeljump.characters.MainCharacters;
 import com.example.pixeljump.characters.enemy.Bat;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Random;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final SurfaceHolder holder;
@@ -38,6 +41,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private int blockSize;
     private int[] blockPositions;
+    private Bitmap[] blocksBitmap = new Bitmap[5];
 
     private Context context;
 
@@ -63,6 +67,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         gunButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gun, options);
         gunButtonBitmap = Bitmap.createScaledBitmap(gunButtonBitmap, gunButtonBitmap.getWidth() * 5, gunButtonBitmap.getHeight() * 5, false);
 
+        groundBitmap = block.getDefaultBlock();
+        Arrays.fill(blocksBitmap, block.getDefaultBlock());
     }
 
     public void render() {
@@ -83,20 +89,25 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 //
 //        }
 
-        groundBitmap = block.getFireBlockOff().getSprite();
 
-        blockSize = groundBitmap.getWidth();
+//        groundBitmap = randomBlock();
+
+//        blockSize = groundBitmap.getWidth();
 
         if (blockPositions == null || blockPositions.length == 0) {
 
-            blockPositions = new int[getWidth() / blockSize];
+            blockPositions = new int[5];
             for (int i = 0; i < blockPositions.length; i++) {
-                blockPositions[i] = i * blockSize;
+                blockPositions[i] = i * 256;
             }
         }
+//        for (int x : blockPositions) {
+////            groundBitmap = randomBlock();
+//            background.drawBitmap(blocksBitmap[],x, (float) getHeight() / 2, null);
+//        }
 
-        for (int x : blockPositions) {
-            background.drawBitmap(groundBitmap, x, (float) getHeight() / 2, null);
+        for (int i = 0; i < blockPositions.length; i++) {
+            background.drawBitmap(blocksBitmap[i], blockPositions[i], (float) getHeight() / 2, null);
         }
 
 
@@ -189,6 +200,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (((float) getWidth() / 3 - 40) < x && x < ((float) getWidth() / 3 + jumpButtonBitmap.getWidth() + 40)
                 && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200) {
 
+            groundBitmap = randomBlock();
             moveBlocksLeftAndAddNewBlock();
         }
     }
@@ -209,7 +221,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private void moveBlocksLeftAndAddNewBlock() {
         for (int i = 0; i < blockPositions.length; i++) {
             blockPositions[i] -= 5; // Adjust the speed as needed
-            if (blockPositions[i] + blockSize < 0) {
+            if (blockPositions[i] + 256 < 0) {
                 // If the block moves off screen, reset its position to the right
                 blockPositions[i] = getWidth();
             }
@@ -218,12 +230,32 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         // Move blocks to the left
         for (int i = 0; i < blockPositions.length; i++) {
-            blockPositions[i] -= blockSize; // Move one block width to the left
+            blockPositions[i] -= 256; // Move one block width to the left
         }
 
         // Remove leftmost block
         System.arraycopy(blockPositions, 1, blockPositions, 0, blockPositions.length - 1);
         // Create a new block and add it to the right
-        blockPositions[blockPositions.length - 1] = getWidth() - blockSize;
+        blockPositions[blockPositions.length - 1] = getWidth() - 256;
+        blocksBitmap[blocksBitmap.length -1] = randomBlock();
+     }
+
+    public Bitmap randomBlock() {
+        Bitmap randBitmap;
+        int randnum;
+        Random rand = new Random();
+        randnum = rand.nextInt(3);
+        switch (randnum) {
+            case 0:
+                randBitmap = block.getDefaultBlock();
+                break;
+            case 1:
+                randBitmap = block.getFallBlock().getSprite();
+                break;
+            default:
+                randBitmap = block.getFireBlock().getSprite();
+                break;
+        }
+        return randBitmap;
     }
 }
