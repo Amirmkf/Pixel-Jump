@@ -16,17 +16,16 @@ import com.example.pixeljump.blocks.Blocks;
 import com.example.pixeljump.characters.MainCharacters;
 import com.example.pixeljump.characters.enemy.Bat;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
 
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
+
     private final SurfaceHolder holder;
     private float x, y;
 
     private float velocityY;
 
-    private Bitmap groundBitmap;
     private Bitmap attackBitmap;
     private Bitmap jumpButtonBitmap;
     private Bitmap shieldButtonBitmap;
@@ -34,23 +33,31 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private final MainCharacters mainCharacters;
     private final Bat bat;
-    private final Blocks block;
+    private final Blocks[] blocks;
+
     private Handler handler;
     private Runnable updateRunnable;
 
-
-    private int blockSize;
     private int[] blockPositions;
-    private Bitmap[] blocksBitmap = new Bitmap[5];
+    private final int[] blocksBitmap = new int[4];
 
-    private Context context;
+    private boolean jumping = false;
+    private int jumpingDelay = 0;
+    Context context;
 
     public GamePanel(Context context) {
         super(context);
+
         this.context = context;
+
         this.mainCharacters = new MainCharacters(context);
         this.bat = new Bat(context);
-        this.block = new Blocks(context);
+
+        this.blocks = new Blocks[4];
+        for (int i = 0; i < blocks.length; i++) {
+            blocks[i] = new Blocks(context);
+        }
+
 
         holder = getHolder();
         holder.addCallback(this);
@@ -67,47 +74,37 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         gunButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gun, options);
         gunButtonBitmap = Bitmap.createScaledBitmap(gunButtonBitmap, gunButtonBitmap.getWidth() * 5, gunButtonBitmap.getHeight() * 5, false);
 
-        groundBitmap = block.getDefaultBlock();
-        Arrays.fill(blocksBitmap, block.getDefaultBlock());
+        Arrays.fill(blocksBitmap, 3);
     }
 
     public void render() {
         Canvas background = holder.lockCanvas();
         background.drawColor(Color.BLACK);
 
-//        groundBitmap = block.getFireBlockOff().getSprite();
-//
-//        int groundWidth = groundBitmap.getWidth();
-//        int groundHeight = groundBitmap.getHeight();
-//
-//        int numTiles = (getWidth() / groundWidth) + 2;
-//
-//        for (int i = 0; i < numTiles; i++) {
-//            int left = i * (groundWidth + 15);
-//
-//            background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
-//
-//        }
-
-
-//        groundBitmap = randomBlock();
-
-//        blockSize = groundBitmap.getWidth();
 
         if (blockPositions == null || blockPositions.length == 0) {
+            blockPositions = new int[4];
 
-            blockPositions = new int[5];
             for (int i = 0; i < blockPositions.length; i++) {
-                blockPositions[i] = i * 256;
+                blockPositions[i] = i * getWidth() / blockPositions.length;
             }
         }
-//        for (int x : blockPositions) {
-////            groundBitmap = randomBlock();
-//            background.drawBitmap(blocksBitmap[],x, (float) getHeight() / 2, null);
-//        }
+
 
         for (int i = 0; i < blockPositions.length; i++) {
-            background.drawBitmap(blocksBitmap[i], blockPositions[i], (float) getHeight() / 2, null);
+            switch (blocksBitmap[i]) {
+                case 0:
+                    background.drawBitmap(blocks[i].getFallBlock().getSprite(), blockPositions[i], (float) getHeight() / 2, null);
+                    break;
+
+                case 1:
+                    background.drawBitmap(blocks[i].getFireBlock().getSprite(), blockPositions[i], (float) getHeight() / 2, null);
+                    break;
+
+                default:
+                    background.drawBitmap(blocks[i].getDefaultBlock(), blockPositions[i], (float) getHeight() / 2, null);
+
+            }
         }
 
 
@@ -122,22 +119,29 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 
         attackBitmap = mainCharacters.getDamageMotion().getSprite();
-
+        Bitmap jumpBitmap = mainCharacters.getJumpMotion().getSprite();
 //        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
-        background.drawBitmap(attackBitmap, x, y, null);
+
+
+        if (jumping) {
+            background.drawBitmap(jumpBitmap, x, (float) getHeight() / 2 - jumpBitmap.getHeight(), null);
+            jumpingDelay++;
+
+            if (jumpingDelay >= mainCharacters.getJumpMotion().getMotionNumber() * 5) {
+                jumping = false;
+                jumpingDelay = 0;
+            }
+
+
+        } else {
+            background.drawBitmap(attackBitmap, x, (float) getHeight() / 2 - attackBitmap.getHeight(), null);
+        }
+
 
         holder.unlockCanvasAndPost(background);
     }
 
     public void updateAnimation() {
-//        aniTick++;
-//        if (aniTick >= aniDelay) {
-//            aniTick = 0;
-//            playerAniIndexX++;
-//            if (playerAniIndexX >= 4)
-//                playerAniIndexX = 0;
-//        }
-
 
 //        float gravity = 0.5f;
         velocityY += 0.5f;
@@ -200,13 +204,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (((float) getWidth() / 3 - 40) < x && x < ((float) getWidth() / 3 + jumpButtonBitmap.getWidth() + 40)
                 && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200) {
 
-            groundBitmap = randomBlock();
             moveBlocksLeftAndAddNewBlock();
+            jumping = true;
         }
     }
-//    (float) getWidth() / 3 - gunButtonBitmap.getWidth() - 40
-//            , getHeight() - gunButtonBitmap.getHeight() - 200
-
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
@@ -220,42 +221,24 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private void moveBlocksLeftAndAddNewBlock() {
         for (int i = 0; i < blockPositions.length; i++) {
-            blockPositions[i] -= 5; // Adjust the speed as needed
-            if (blockPositions[i] + 256 < 0) {
+
+            if (blockPositions[i] + getWidth() / blocksBitmap.length < 0) {
                 // If the block moves off screen, reset its position to the right
                 blockPositions[i] = getWidth();
             }
-
         }
 
         // Move blocks to the left
         for (int i = 0; i < blockPositions.length; i++) {
-            blockPositions[i] -= 256; // Move one block width to the left
+            blockPositions[i] -= getWidth() / blocksBitmap.length; // Move one block width to the left
         }
 
         // Remove leftmost block
         System.arraycopy(blockPositions, 1, blockPositions, 0, blockPositions.length - 1);
-        // Create a new block and add it to the right
-        blockPositions[blockPositions.length - 1] = getWidth() - 256;
-        blocksBitmap[blocksBitmap.length -1] = randomBlock();
-     }
+        System.arraycopy(blocksBitmap, 1, blocksBitmap, 0, blocksBitmap.length - 1);
 
-    public Bitmap randomBlock() {
-        Bitmap randBitmap;
-        int randnum;
-        Random rand = new Random();
-        randnum = rand.nextInt(3);
-        switch (randnum) {
-            case 0:
-                randBitmap = block.getDefaultBlock();
-                break;
-            case 1:
-                randBitmap = block.getFallBlock().getSprite();
-                break;
-            default:
-                randBitmap = block.getFireBlock().getSprite();
-                break;
-        }
-        return randBitmap;
+        // Create a new block and add it to the right
+        blockPositions[blockPositions.length - 1] = getWidth() - getWidth() / blocksBitmap.length;
+        blocksBitmap[blocksBitmap.length - 1] = new Random().nextInt(3);
     }
 }
