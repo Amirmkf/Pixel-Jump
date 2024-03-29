@@ -2,12 +2,14 @@ package com.example.pixeljump;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -22,23 +24,38 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private float velocityY;
     private Bitmap groundBitmap;
     private Bitmap attackBitmap;
+    private Bitmap jumpButtonBitmap;
+    private Bitmap shieldButtonBitmap;
+    private Bitmap gunButtonBitmap;
     private final MainCharacters mainCharacters;
     private final Bat bat;
     private final Blocks block;
-
     private Handler handler;
     private Runnable updateRunnable;
 
 
+    private Context context;
+
     public GamePanel(Context context) {
         super(context);
-
+        this.context = context;
         this.mainCharacters = new MainCharacters(context);
         this.bat = new Bat(context);
         this.block = new Blocks(context);
 
         holder = getHolder();
         holder.addCallback(this);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        jumpButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.play, options);
+        jumpButtonBitmap = Bitmap.createScaledBitmap(jumpButtonBitmap, jumpButtonBitmap.getWidth() * 14, jumpButtonBitmap.getHeight() * 14, false);
+
+        shieldButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.shield, options);
+        shieldButtonBitmap = Bitmap.createScaledBitmap(shieldButtonBitmap, shieldButtonBitmap.getWidth() * 5, shieldButtonBitmap.getHeight() * 5, false);
+
+        gunButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gun, options);
+        gunButtonBitmap = Bitmap.createScaledBitmap(gunButtonBitmap, gunButtonBitmap.getWidth() * 5, gunButtonBitmap.getHeight() * 5, false);
+
     }
 
     public void render() {
@@ -56,13 +73,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             int left = i * (groundWidth + 15);
 
             background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
+
         }
+
+        background.drawBitmap(shieldButtonBitmap, getWidth() - shieldButtonBitmap.getWidth() - 40
+                , getHeight() - shieldButtonBitmap.getHeight() - 200, null);
+
+        background.drawBitmap(jumpButtonBitmap, (float) getWidth() / 3 * 2 - jumpButtonBitmap.getWidth() - 40
+                , getHeight() - jumpButtonBitmap.getHeight() - 200, null);
+
+        background.drawBitmap(gunButtonBitmap, (float) getWidth() / 3 - gunButtonBitmap.getWidth() - 40
+                , getHeight() - gunButtonBitmap.getHeight() - 200, null);
+
 
         attackBitmap = mainCharacters.getDamageMotion().getSprite();
 
 //        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
         background.drawBitmap(attackBitmap, x, y, null);
-
 
         holder.unlockCanvasAndPost(background);
     }
@@ -128,10 +155,22 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             x = event.getX() - 180;
             y = event.getY() - 135;
             velocityY = -.5f;
+            jumpButton(event.getX(), event.getY());
         }
 
         return true;
     }
+
+    public void jumpButton(float x, float y) {
+        float temp = ((float) getWidth() / 3);
+        if (((float) getWidth() / 3 -40) < x && x < ((float) getWidth() / 3 + jumpButtonBitmap.getWidth() +40)
+                && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200)
+        {
+            Toast.makeText(context, "jumpButton", Toast.LENGTH_SHORT).show();
+        }
+    }
+//    (float) getWidth() / 3 - gunButtonBitmap.getWidth() - 40
+//            , getHeight() - gunButtonBitmap.getHeight() - 200
 
 
     @Override
