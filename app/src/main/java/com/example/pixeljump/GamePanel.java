@@ -36,9 +36,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Runnable updateRunnable;
 
 
-    private int blockSize; // Size of each block
-    private int[] blockPositions; // Array to store the x positions of blocks
-    private int screenWidth, screenHeight;
+    private int blockSize;
+    private int[] blockPositions;
 
     private Context context;
 
@@ -51,8 +50,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         holder = getHolder();
         holder.addCallback(this);
+
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
+
         jumpButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.play, options);
         jumpButtonBitmap = Bitmap.createScaledBitmap(jumpButtonBitmap, jumpButtonBitmap.getWidth() * 14, jumpButtonBitmap.getHeight() * 14, false);
 
@@ -87,7 +88,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         blockSize = groundBitmap.getWidth();
 
         if (blockPositions == null || blockPositions.length == 0) {
-            // Initialize block positions based on screen width
+
             blockPositions = new int[getWidth() / blockSize];
             for (int i = 0; i < blockPositions.length; i++) {
                 blockPositions[i] = i * blockSize;
@@ -185,10 +186,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void jumpButton(float x, float y) {
-        float temp = ((float) getWidth() / 3);
         if (((float) getWidth() / 3 - 40) < x && x < ((float) getWidth() / 3 + jumpButtonBitmap.getWidth() + 40)
                 && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200) {
-            Toast.makeText(context, "jumpButton", Toast.LENGTH_SHORT).show();
+
             moveBlocksLeftAndAddNewBlock();
         }
     }
@@ -213,15 +213,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 // If the block moves off screen, reset its position to the right
                 blockPositions[i] = getWidth();
             }
+
         }
 
         // Move blocks to the left
         for (int i = 0; i < blockPositions.length; i++) {
             blockPositions[i] -= blockSize; // Move one block width to the left
         }
+
         // Remove leftmost block
         System.arraycopy(blockPositions, 1, blockPositions, 0, blockPositions.length - 1);
         // Create a new block and add it to the right
-        blockPositions[blockPositions.length - 1] = screenWidth - blockSize;
+        blockPositions[blockPositions.length - 1] = getWidth() - blockSize;
     }
 }
