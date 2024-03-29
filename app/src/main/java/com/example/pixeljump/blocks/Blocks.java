@@ -8,23 +8,38 @@ import com.example.pixeljump.R;
 import com.example.pixeljump.utils.Motion;
 
 public class Blocks {
-    Context context;
-    Bitmap groundBitmap;
+    private final Context context;
+
+    private Bitmap defaultBlock;
+    private Motion fallBlock;
 
     public Blocks(Context context) {
         this.context = context;
+
+        setDefaultBlock();
+        setFallBlock();
     }
 
-    public Bitmap defaultBlock() {
-        groundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.terrain);
-        return groundBitmap = Bitmap.createScaledBitmap(groundBitmap, groundBitmap.getWidth() * 2, groundBitmap.getHeight() * 2, false);
+    private void setDefaultBlock() {
+        Bitmap block = BitmapFactory.decodeResource(context.getResources(), R.drawable.terrain);
+
+        defaultBlock = Bitmap.createScaledBitmap(block, block.getWidth() * 2, block.getHeight() * 2, false);
     }
 
-    public Motion blockFall() {
+    private void setFallBlock() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
+
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.block_fall, options);
 
-        return new Motion(spriteSheet, 4, 10, 32);
+        fallBlock = new Motion(spriteSheet, 4, 10, 32);
+    }
+
+    public Bitmap getDefaultBlock() {
+        return defaultBlock;
+    }
+
+    public Motion getFallBlock() {
+        return fallBlock;
     }
 }

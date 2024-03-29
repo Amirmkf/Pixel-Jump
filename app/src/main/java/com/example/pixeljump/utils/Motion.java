@@ -8,6 +8,9 @@ public class Motion {
     private final int motionNumber;
     private final Bitmap[] sprites;
 
+    private int motionIndex = 0;
+    private int motionTick;
+
 
     public Motion(Bitmap spriteSheet, int motionNumber, int imageHeight, int motionsWidth) {
         this.spriteSheet = spriteSheet;
@@ -27,18 +30,20 @@ public class Motion {
         return spriteSheet;
     }
 
-    public Bitmap getSprite(int index) {
-//        TODO
-        if ( index> motionNumber - 1)
-            System.out.println("out of range 'getSprite'");
-//            return sprites[motionNumber - 1];
+    public Bitmap getSprite() {
 
+        motionTick++;
+        if (motionTick >= 5) {
+            motionTick = 0;
+            motionIndex++;
+            if (motionIndex >= motionNumber)
+                motionIndex = 0;
+        }
 
-        return sprites[index];
+        return sprites[motionIndex];
     }
 
     private Bitmap getScaledBitmap(Bitmap bitmap) {
         return Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 8, bitmap.getHeight() * 8, false);
     }
-
 }
