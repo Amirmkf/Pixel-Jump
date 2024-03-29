@@ -11,6 +11,7 @@ public class Blocks {
     private final Context context;
 
     private Bitmap defaultBlock;
+    private Motion fireBlock;
     private Motion fallBlock;
 
     public Blocks(Context context) {
@@ -18,6 +19,7 @@ public class Blocks {
 
         setDefaultBlock();
         setFallBlock();
+        setFireBlockOff();
     }
 
     private void setDefaultBlock() {
@@ -31,8 +33,17 @@ public class Blocks {
         options.inScaled = false;
 
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.block_fall, options);
-
         fallBlock = new Motion(spriteSheet, 4, 10, 32);
+    }
+
+    private void setFireBlockOff() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+
+        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.fire_box, options);
+
+        fireBlock = new Motion(spriteSheet, 13, 50, 23);
+
     }
 
     public Bitmap getDefaultBlock() {
@@ -41,5 +52,9 @@ public class Blocks {
 
     public Motion getFallBlock() {
         return fallBlock;
+    }
+
+    public Motion getFireBlockOff() {
+        return fireBlock;
     }
 }

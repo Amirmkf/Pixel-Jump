@@ -52,7 +52,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         Canvas background = holder.lockCanvas();
         background.drawColor(Color.BLACK);
 
-        groundBitmap = block.getFallBlock().getSprite();
+        groundBitmap = block.getFireBlockOff().getSprite();
 
         int groundWidth = groundBitmap.getWidth();
         int groundHeight = groundBitmap.getHeight();

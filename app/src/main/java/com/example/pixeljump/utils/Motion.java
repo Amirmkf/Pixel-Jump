@@ -7,6 +7,9 @@ public class Motion {
     private final Bitmap spriteSheet;
     private final int motionNumber;
     private final Bitmap[] sprites;
+    private int playerAniIndexX = 0;
+    private int aniTick;
+    private final int aniDelay = 10;
 
     private int motionIndex = 0;
     private int motionTick;
@@ -42,6 +45,27 @@ public class Motion {
 
         return sprites[motionIndex];
     }
+    public void updateAnimation() {
+        aniTick++;
+        if (aniTick >= aniDelay) {
+            aniTick = 0;
+            playerAniIndexX++;
+            if (playerAniIndexX >= 4)
+                playerAniIndexX = 0;
+        }
+
+
+////        float gravity = 0.5f;
+//        velocityY += 0.5f;
+//
+//        y += velocityY;
+//
+//        if (y >= (float) getHeight() / 2 - attackBitmap.getHeight() - 10) {
+//            y = (float) getHeight() / 2 - attackBitmap.getHeight();
+//            velocityY = 0;
+//        }
+    }
+
 
     private Bitmap getScaledBitmap(Bitmap bitmap) {
         return Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 8, bitmap.getHeight() * 8, false);
