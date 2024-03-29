@@ -22,17 +22,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private float x, y;
 
     private float velocityY;
+
     private Bitmap groundBitmap;
     private Bitmap attackBitmap;
     private Bitmap jumpButtonBitmap;
     private Bitmap shieldButtonBitmap;
     private Bitmap gunButtonBitmap;
+
     private final MainCharacters mainCharacters;
     private final Bat bat;
     private final Blocks block;
     private Handler handler;
     private Runnable updateRunnable;
 
+
+    private int blockSize; // Size of each block
+    private int[] blockPositions; // Array to store the x positions of blocks
+    private int screenWidth, screenHeight;
 
     private Context context;
 
@@ -62,19 +68,36 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         Canvas background = holder.lockCanvas();
         background.drawColor(Color.BLACK);
 
+//        groundBitmap = block.getFireBlockOff().getSprite();
+//
+//        int groundWidth = groundBitmap.getWidth();
+//        int groundHeight = groundBitmap.getHeight();
+//
+//        int numTiles = (getWidth() / groundWidth) + 2;
+//
+//        for (int i = 0; i < numTiles; i++) {
+//            int left = i * (groundWidth + 15);
+//
+//            background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
+//
+//        }
+
         groundBitmap = block.getFireBlockOff().getSprite();
 
-        int groundWidth = groundBitmap.getWidth();
-        int groundHeight = groundBitmap.getHeight();
+        blockSize = groundBitmap.getWidth();
 
-        int numTiles = (getWidth() / groundWidth) + 2;
-
-        for (int i = 0; i < numTiles; i++) {
-            int left = i * (groundWidth + 15);
-
-            background.drawBitmap(groundBitmap, left, (float) getHeight() / 2, null);
-
+        if (blockPositions == null || blockPositions.length == 0) {
+            // Initialize block positions based on screen width
+            blockPositions = new int[getWidth() / blockSize];
+            for (int i = 0; i < blockPositions.length; i++) {
+                blockPositions[i] = i * blockSize;
+            }
         }
+
+        for (int x : blockPositions) {
+            background.drawBitmap(groundBitmap, x, (float) getHeight() / 2, null);
+        }
+
 
         background.drawBitmap(shieldButtonBitmap, getWidth() - shieldButtonBitmap.getWidth() - 40
                 , getHeight() - shieldButtonBitmap.getHeight() - 200, null);
@@ -152,8 +175,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            x = event.getX() - 180;
-            y = event.getY() - 135;
+//            x = event.getX() - 180;
+//            y = event.getY() - 135;
             velocityY = -.5f;
             jumpButton(event.getX(), event.getY());
         }
@@ -163,10 +186,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     public void jumpButton(float x, float y) {
         float temp = ((float) getWidth() / 3);
-        if (((float) getWidth() / 3 -40) < x && x < ((float) getWidth() / 3 + jumpButtonBitmap.getWidth() +40)
-                && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200)
-        {
+        if (((float) getWidth() / 3 - 40) < x && x < ((float) getWidth() / 3 + jumpButtonBitmap.getWidth() + 40)
+                && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200) {
             Toast.makeText(context, "jumpButton", Toast.LENGTH_SHORT).show();
+            moveBlocksLeftAndAddNewBlock();
         }
     }
 //    (float) getWidth() / 3 - gunButtonBitmap.getWidth() - 40
@@ -181,5 +204,24 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
         handler.removeCallbacks(updateRunnable);
+    }
+
+    private void moveBlocksLeftAndAddNewBlock() {
+        for (int i = 0; i < blockPositions.length; i++) {
+            blockPositions[i] -= 5; // Adjust the speed as needed
+            if (blockPositions[i] + blockSize < 0) {
+                // If the block moves off screen, reset its position to the right
+                blockPositions[i] = getWidth();
+            }
+        }
+
+        // Move blocks to the left
+        for (int i = 0; i < blockPositions.length; i++) {
+            blockPositions[i] -= blockSize; // Move one block width to the left
+        }
+        // Remove leftmost block
+        System.arraycopy(blockPositions, 1, blockPositions, 0, blockPositions.length - 1);
+        // Create a new block and add it to the right
+        blockPositions[blockPositions.length - 1] = screenWidth - blockSize;
     }
 }
