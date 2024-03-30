@@ -30,19 +30,19 @@ public class Mushroom {
     private void setAttackMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.mushroom_attack, options);
 
-        this.attackMotion = new Motion(spriteSheet, 8, 150, 150);
+        this.attackMotion = new Motion(spriteSheet, 8, 45, 60);
     }
 
     private void setIdleMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.mushroom_idle, options);
 
-        this.idleMotion = new Motion(spriteSheet, 4, 150, 150);
+        this.idleMotion = new Motion(spriteSheet, 4, 36, 25);
     }
 
     private void setDeadMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.mushroom_death, options);
 
-        this.deadMotion = new Motion(spriteSheet, 11, 150, 150);
+        this.deadMotion = new Motion(spriteSheet, 4, 37, 25);
     }
 
 

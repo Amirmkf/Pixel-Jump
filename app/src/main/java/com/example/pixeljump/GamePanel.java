@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import com.example.pixeljump.blocks.Blocks;
 import com.example.pixeljump.characters.MainCharacters;
 import com.example.pixeljump.characters.enemy.Bat;
+import com.example.pixeljump.characters.enemy.Mushroom;
 import com.example.pixeljump.utils.Motion;
 
 import java.util.Arrays;
@@ -32,7 +33,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap gunButtonBitmap;
 
     private final MainCharacters mainCharacters;
-    private final Bat bat;
 
     private Handler handler;
     private Runnable gameLoop;
@@ -47,6 +47,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     actions characterAction = actions.IDLE;
     private int actionDelay = 0;
+
+    private final Mushroom mushroom;
+    private final Bat bat;
+    private int[] enemyBlock = new int[blockCount];
+
+
 //    Context context;
 
     public GamePanel(Context context) {
@@ -56,6 +62,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         this.mainCharacters = new MainCharacters(context);
         this.bat = new Bat(context);
+        this.mushroom = new Mushroom(context);
 
         for (int i = 0; i < blockCount; i++) {
             blocks[i] = new Blocks(context);
@@ -81,12 +88,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
 
         Arrays.fill(blocksBitmap, 3);
+        Arrays.fill(enemyBlock, 10);
     }
 
     public void render() {
 
 //        Canvas background = holder.lockCanvas();
         Canvas background = null;
+
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             background = holder.lockHardwareCanvas();
@@ -105,14 +114,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             background.drawColor(Color.rgb(216, 189, 155));
         }
 
-//        background.drawColor(Color.BLACK);
-
-
-//
-//        Rect srcRect = new Rect(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight());
-//        Rect destRect = new Rect(0, 0, background.getWidth(), background.getHeight());
-//        background.drawBitmap(backgroundBitmap, srcRect, destRect, null);
-
         //Draw background
         for (int i = 0; i < blockCount; i++) {
             switch (blocksBitmap[i]) {
@@ -128,8 +129,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     break;
 
                 default:
-                    background.drawBitmap(blocks[i].getDefaultBlock(), blockPositions[i], (float) getHeight() / 2, null);
+                    Bitmap normalBlock = blocks[i].getDefaultBlock();
+                    switch (enemyBlock[i]) {
+                        case 0:
+                            Bitmap batBitmap = bat.getAttackMotion().getSprite();
+                            background.drawBitmap(batBitmap, blockPositions[i] - (float) normalBlock.getWidth() /2, (float) getHeight() / 2 - batBitmap.getHeight(), null);
+                            break;
+                        case 1:
+                            Bitmap mushroomBitmap = mushroom.getAttackMotion().getSprite();
+                            background.drawBitmap(mushroomBitmap, blockPositions[i] - (float) normalBlock.getWidth() /2, (float) getHeight() / 2 - mushroomBitmap.getHeight(), null);
+                            break;
+                    }
 
+                    background.drawBitmap(normalBlock, blockPositions[i], (float) getHeight() / 2, null);
             }
         }
 
@@ -302,13 +314,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
                     System.arraycopy(blockPositions, 1, blockPositions, 0, blockCount - 1);
                     System.arraycopy(blocksBitmap, 1, blocksBitmap, 0, blockCount - 1);
+                    System.arraycopy(enemyBlock, 1, enemyBlock, 0, blockCount - 1);
 
                     // Create a new block and add it to the right
                     blockPositions[blockCount - 1] = getWidth() - (getWidth() / (blockCount));
+
+                    //Random block bitmap
                     blocksBitmap[blockCount - 1] = new Random().nextInt(6);
+
+                    //random enemy bitmap
+                    enemyBlock[blockCount - 1] = new Random().nextInt(5);
                 }
             }
         };
+
 
         handler.post(updateBlock);
     }

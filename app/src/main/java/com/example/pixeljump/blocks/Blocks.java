@@ -13,7 +13,6 @@ public class Blocks {
     private Bitmap defaultBlock;
     private Motion fireBlock;
     private Motion fallBlock;
-
     public Blocks(Context context) {
         this.context = context;
 
