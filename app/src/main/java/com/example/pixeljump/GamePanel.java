@@ -35,7 +35,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final Bat bat;
 
     private Handler handler;
-    private Runnable updateRunnable;
+    private Runnable gameLoop;
 
     //Blocks in screen
     private final int blockCount = 4;
@@ -46,7 +46,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     enum actions {IDLE, JUMP, ATTACK, DAMAGE, DEAD}
 
     actions characterAction = actions.IDLE;
-    private int actionDelay;
+    private int actionDelay = 0;
 //    Context context;
 
     public GamePanel(Context context) {
@@ -121,7 +121,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     break;
 
                 case 1:
-                    background.drawBitmap(blocks[i].getFireBlock().getSprite(), blockPositions[i], (float) getHeight() / 2, null);
+                    Bitmap fireBlock = blocks[i].getFireBlock().getSprite();
+                    fireBlock = Bitmap.createScaledBitmap(fireBlock, fireBlock.getWidth() * 2, fireBlock.getHeight() * 2, false);
+
+                    background.drawBitmap(fireBlock, blockPositions[i], (float) getHeight() / 2 - (float) fireBlock.getHeight() / 2, null);
                     break;
 
                 default:
@@ -210,7 +213,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         handler = new Handler();
-        updateRunnable = new Runnable() {
+        gameLoop = new Runnable() {
 
             long lastFPScheck = System.currentTimeMillis();
             int fps = 0;
@@ -235,7 +238,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }
         };
 
-        handler.post(updateRunnable);
+        handler.post(gameLoop);
     }
 
 
@@ -278,12 +281,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        handler.removeCallbacks(updateRunnable);
+        handler.removeCallbacks(gameLoop);
     }
 
     private void moveBlocks() {
 
-        Handler handler = new Handler();
         Runnable updateBlock = new Runnable() {
 
             @Override

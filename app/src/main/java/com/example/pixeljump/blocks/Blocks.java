@@ -42,7 +42,7 @@ public class Blocks {
 
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.fire_box, options);
 
-        fireBlock = new Motion(spriteSheet, 13, 50, 23);
+        fireBlock = new Motion(spriteSheet, 13, 32, 16);
 
     }
 
