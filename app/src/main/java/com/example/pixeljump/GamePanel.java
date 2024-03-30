@@ -86,7 +86,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void render() {
-        Canvas background = holder.lockCanvas();
+//        Canvas background = holder.lockCanvas();
+        Canvas background = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            background = holder.lockHardwareCanvas();
+        } else {
+            holder.lockCanvas();
+        }
+
         background.drawColor(Color.BLACK);
 
 //        for (int i = 0; i < getWidth() / backgroundBitmap.getWidth() + 1; i++) {
@@ -137,8 +144,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 Bitmap idleBitmap = mainCharacters.getIdleMotion().getSprite();
                 background.drawBitmap(idleBitmap, 0, (float) getHeight() / 2 - idleBitmap.getHeight(), null);
 
-               if (actionDelay != 0)
-                   actionDelay = 0;
+                if (actionDelay != 0)
+                    actionDelay = 0;
 
                 break;
 
@@ -218,7 +225,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 }
 
                 // Schedule next update
-                handler.postDelayed(this, 10);
+                handler.postDelayed(this, 15);
             }
         };
 
