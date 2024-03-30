@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import com.example.pixeljump.blocks.Blocks;
 import com.example.pixeljump.characters.MainCharacters;
 import com.example.pixeljump.characters.enemy.Bat;
+import com.example.pixeljump.utils.Motion;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -22,11 +23,10 @@ import java.util.Random;
 public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private final SurfaceHolder holder;
-    private float x, y;
 
-    private float velocityY;
+//    private float velocityY;
 
-    private Bitmap attackBitmap;
+    private Bitmap backgroundBitmap;
     private Bitmap jumpButtonBitmap;
     private Bitmap shieldButtonBitmap;
     private Bitmap gunButtonBitmap;
@@ -38,17 +38,21 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private Handler handler;
     private Runnable updateRunnable;
 
-    private int[] blockPositions;
+    private final int[] blockPositions = new int[4];
     private final int[] blocksBitmap = new int[4];
 
-    private boolean jumping = false;
-    private int jumpingDelay = 0;
-    Context context;
+
+    enum actions {IDLE, JUMP, ATTACK, DAMAGE, DEAD}
+
+    actions characterAction = actions.IDLE;
+
+    private int actionDelay = 0;
+//    Context context;
 
     public GamePanel(Context context) {
         super(context);
 
-        this.context = context;
+//        this.context = context;
 
         this.mainCharacters = new MainCharacters(context);
         this.bat = new Bat(context);
@@ -74,23 +78,34 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         gunButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gun, options);
         gunButtonBitmap = Bitmap.createScaledBitmap(gunButtonBitmap, gunButtonBitmap.getWidth() * 5, gunButtonBitmap.getHeight() * 5, false);
 
+        backgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background_brown, options);
+
+
         Arrays.fill(blocksBitmap, 3);
     }
 
     public void render() {
         Canvas background = holder.lockCanvas();
-        background.drawColor(Color.BLACK);
+//        background.drawColor(Color.BLACK);
 
-
-        if (blockPositions == null || blockPositions.length == 0) {
-            blockPositions = new int[4];
-
-            for (int i = 0; i < blockPositions.length; i++) {
-                blockPositions[i] = i * getWidth() / blockPositions.length;
+        for (int i = 0; i < getWidth() / backgroundBitmap.getWidth() + 1; i++) {
+            for (int j = 0; j < getHeight() / backgroundBitmap.getHeight() + 1; j++) {
+                background.drawBitmap(backgroundBitmap,
+                        i * backgroundBitmap.getWidth()
+                        , j * backgroundBitmap.getHeight(), null);
             }
         }
 
 
+//        if (blockPositions == null || blockPositions.length == 0) {
+//            blockPositions = new int[4];
+//
+//            for (int i = 0; i < blockPositions.length; i++) {
+//                blockPositions[i] = i * getWidth() / blockPositions.length;
+//            }
+//        }
+
+        //Draw background
         for (int i = 0; i < blockPositions.length; i++) {
             switch (blocksBitmap[i]) {
                 case 0:
@@ -107,34 +122,55 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-
-        background.drawBitmap(shieldButtonBitmap, getWidth() - shieldButtonBitmap.getWidth() - 40
+        background.drawBitmap(shieldButtonBitmap,
+                getWidth() - shieldButtonBitmap.getWidth() - 40
                 , getHeight() - shieldButtonBitmap.getHeight() - 200, null);
 
-        background.drawBitmap(jumpButtonBitmap, (float) getWidth() / 3 * 2 - jumpButtonBitmap.getWidth() - 40
+        background.drawBitmap(jumpButtonBitmap,
+                (float) getWidth() / 3 * 2 - jumpButtonBitmap.getWidth() - 40
                 , getHeight() - jumpButtonBitmap.getHeight() - 200, null);
 
-        background.drawBitmap(gunButtonBitmap, (float) getWidth() / 3 - gunButtonBitmap.getWidth() - 40
+        background.drawBitmap(gunButtonBitmap,
+                (float) getWidth() / 3 - gunButtonBitmap.getWidth() - 40
                 , getHeight() - gunButtonBitmap.getHeight() - 200, null);
 
 
-        attackBitmap = mainCharacters.getDamageMotion().getSprite();
-        Bitmap jumpBitmap = mainCharacters.getJumpMotion().getSprite();
-//        background.drawBitmap(charecterBitmap, x, getHeight() - groundHeight - charecterBitmap.getHeight(), null);
+        //Draw character base of action
+        switch (characterAction) {
+            case IDLE:
+                Bitmap idleBitmap = mainCharacters.getIdleMotion().getSprite();
+                background.drawBitmap(idleBitmap, 0, (float) getHeight() / 2 - idleBitmap.getHeight(), null);
 
+                break;
 
-        if (jumping) {
-            background.drawBitmap(jumpBitmap, x, (float) getHeight() / 2 - jumpBitmap.getHeight(), null);
-            jumpingDelay++;
+            case JUMP:
+                Motion jumpMotion = mainCharacters.getJumpMotion();
+                jumpMotion.setMotionDelay(4);
+                Bitmap jumpBitmap = jumpMotion.getSprite();
+                background.drawBitmap(jumpBitmap, 0, (float) getHeight() / 2 - jumpBitmap.getHeight(), null);
 
-            if (jumpingDelay >= mainCharacters.getJumpMotion().getMotionNumber() * 5) {
-                jumping = false;
-                jumpingDelay = 0;
-            }
+                actionDelay++;
 
+                if (actionDelay == jumpMotion.getMotionNumber() * jumpMotion.getMotionDelay()) {
+                    characterAction = actions.IDLE;
+                    actionDelay = 0;
+                }
 
-        } else {
-            background.drawBitmap(attackBitmap, x, (float) getHeight() / 2 - attackBitmap.getHeight(), null);
+                break;
+
+            case ATTACK:
+                Motion attackMotion = mainCharacters.getAttackMotion();
+                Bitmap attackBitmap = attackMotion.getSprite();
+                background.drawBitmap(attackBitmap, 0, (float) getHeight() / 2 - attackBitmap.getHeight(), null);
+
+                actionDelay++;
+
+                if (actionDelay == attackMotion.getMotionNumber() * attackMotion.getMotionDelay()) {
+                    characterAction = actions.IDLE;
+                    actionDelay = 0;
+                }
+
+                break;
         }
 
 
@@ -144,19 +180,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     public void updateAnimation() {
 
 //        float gravity = 0.5f;
-        velocityY += 0.5f;
-
-        y += velocityY;
-
-        if (y >= (float) getHeight() / 2 - attackBitmap.getHeight() - 10) {
-            y = (float) getHeight() / 2 - attackBitmap.getHeight();
-            velocityY = 0;
-        }
+//        velocityY += 0.5f;
+//
+//        y += velocityY;
+//
+//        if (y >= (float) getHeight() / 2 - attackBitmap.getHeight() - 10) {
+//            y = (float) getHeight() / 2 - attackBitmap.getHeight();
+//            velocityY = 0;
+//        }
     }
 
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
+
+        for (int i = 0; i < blockPositions.length; i++) {
+            blockPositions[i] = i * getWidth() / blockPositions.length;
+        }
 
         handler = new Handler();
         updateRunnable = new Runnable() {
@@ -193,19 +233,28 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
 //            x = event.getX() - 180;
 //            y = event.getY() - 135;
-            velocityY = -.5f;
+//            velocityY = -.5f;
             jumpButton(event.getX(), event.getY());
+            attackButton(event.getX(), event.getY());
         }
 
         return true;
     }
 
     public void jumpButton(float x, float y) {
-        if (((float) getWidth() / 3 - 40) < x && x < ((float) getWidth() / 3 + jumpButtonBitmap.getWidth() + 40)
-                && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200) {
+        if (((float) getWidth() / 3 * 2 - jumpButtonBitmap.getWidth() - 40) < x && x < ((float) getWidth() / 3 * 2 - 40)
+                && y < getHeight() - 200 && y > getHeight() - jumpButtonBitmap.getHeight() - 200) {
 
             moveBlocksLeftAndAddNewBlock();
-            jumping = true;
+            characterAction = actions.JUMP;
+        }
+    }
+
+    public void attackButton(float x, float y) {
+        if ((float) getWidth() / 3 - 40 - gunButtonBitmap.getWidth() < x && x < (float) getWidth() / 3 - 60
+                && y < getHeight() - 200 && y > getHeight() - gunButtonBitmap.getHeight() - 200) {
+
+            characterAction = actions.ATTACK;
         }
     }
 

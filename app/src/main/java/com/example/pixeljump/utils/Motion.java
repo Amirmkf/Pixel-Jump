@@ -7,10 +7,8 @@ public class Motion {
     private final Bitmap spriteSheet;
     private final int motionNumber;
     private final Bitmap[] sprites;
-    private int playerAniIndexX = 0;
-    private int aniTick;
-    private final int aniDelay = 10;
 
+    private int motionDelay = 5;
     private int motionIndex = 0;
     private int motionTick;
 
@@ -36,19 +34,25 @@ public class Motion {
     public Bitmap getSprite() {
 
         motionTick++;
-        if (motionTick >= 5) {
+        if (motionTick >= motionDelay) {
             motionTick = 0;
             motionIndex++;
             if (motionIndex >= motionNumber)
                 motionIndex = 0;
         }
 
-
         return sprites[motionIndex];
     }
 
+    public int getMotionDelay() {
+        return motionDelay;
+    }
 
     private Bitmap getScaledBitmap(Bitmap bitmap) {
         return Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 8, bitmap.getHeight() * 8, false);
+    }
+
+    public void setMotionDelay(int motionDelay) {
+        this.motionDelay = motionDelay;
     }
 }
