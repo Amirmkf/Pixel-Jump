@@ -46,7 +46,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     enum actions {IDLE, JUMP, ATTACK, DAMAGE, DEAD}
 
     actions characterAction = actions.IDLE;
-    private int actionDelay = 0;
+    private int actionDelay;
 //    Context context;
 
     public GamePanel(Context context) {
@@ -245,8 +245,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 //            x = event.getX() - 180;
 //            y = event.getY() - 135;
 //            velocityY = -.5f;
-            jumpButton(event.getX(), event.getY());
-            attackButton(event.getX(), event.getY());
+            if (actionDelay == 0) {
+                jumpButton(event.getX(), event.getY());
+                attackButton(event.getX(), event.getY());
+            }
         }
 
         return true;
