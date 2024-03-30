@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -86,24 +87,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     public void render() {
         Canvas background = holder.lockCanvas();
-//        background.drawColor(Color.BLACK);
+        background.drawColor(Color.BLACK);
 
-        for (int i = 0; i < getWidth() / backgroundBitmap.getWidth() + 1; i++) {
-            for (int j = 0; j < getHeight() / backgroundBitmap.getHeight() + 1; j++) {
-                background.drawBitmap(backgroundBitmap,
-                        i * backgroundBitmap.getWidth()
-                        , j * backgroundBitmap.getHeight(), null);
-            }
-        }
-
-
-//        if (blockPositions == null || blockPositions.length == 0) {
-//            blockPositions = new int[4];
-//
-//            for (int i = 0; i < blockPositions.length; i++) {
-//                blockPositions[i] = i * getWidth() / blockPositions.length;
+//        for (int i = 0; i < getWidth() / backgroundBitmap.getWidth() + 1; i++) {
+//            for (int j = 0; j < getHeight() / backgroundBitmap.getHeight() + 1; j++) {
+//                background.drawBitmap(backgroundBitmap,
+//                        i * backgroundBitmap.getWidth()
+//                        , j * backgroundBitmap.getHeight(), null);
 //            }
 //        }
+
+        Rect srcRect = new Rect(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight());
+        Rect destRect = new Rect(0, 0, background.getWidth(), background.getHeight());
+        background.drawBitmap(backgroundBitmap, srcRect, destRect, null);
 
         //Draw background
         for (int i = 0; i < blockPositions.length; i++) {
@@ -141,11 +137,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 Bitmap idleBitmap = mainCharacters.getIdleMotion().getSprite();
                 background.drawBitmap(idleBitmap, 0, (float) getHeight() / 2 - idleBitmap.getHeight(), null);
 
+               if (actionDelay != 0)
+                   actionDelay = 0;
+
                 break;
 
             case JUMP:
                 Motion jumpMotion = mainCharacters.getJumpMotion();
-                jumpMotion.setMotionDelay(4);
                 Bitmap jumpBitmap = jumpMotion.getSprite();
                 background.drawBitmap(jumpBitmap, 0, (float) getHeight() / 2 - jumpBitmap.getHeight(), null);
 
@@ -220,7 +218,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 }
 
                 // Schedule next update
-                handler.postDelayed(this, 20);
+                handler.postDelayed(this, 10);
             }
         };
 
