@@ -13,8 +13,10 @@ public class Blocks {
     private Bitmap defaultBlock;
     private Motion fireBlock;
     private Motion fallBlock;
+    private Motion fire;
+    private int blockPositionX;
+    private int blockPositionY;
 
-    private int blockPosition;
     private int blockId = 10; //set big random number for default of switch case
 
     public Blocks(Context context) {
@@ -23,6 +25,7 @@ public class Blocks {
         setDefaultBlock();
         setFallBlock();
         setFireBlock();
+        setFire();
     }
 
     private void setDefaultBlock() {
@@ -47,6 +50,18 @@ public class Blocks {
 
         fireBlock = new Motion(spriteSheet, 13, 32, 16);
     }
+    private  void setFire(){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+
+        Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.fire, options);
+
+        fire = new Motion(spriteSheet, 13, 17, 16);
+    }
+
+    public Motion getFire() {
+        return fire;
+    }
 
     public Bitmap getDefaultBlock() {
         return defaultBlock;
@@ -61,12 +76,12 @@ public class Blocks {
     }
 
 
-    public int getBlockPosition() {
-        return blockPosition;
+    public int getBlockPositionX() {
+        return blockPositionX;
     }
 
-    public void setBlockPosition(int blockPosition) {
-        this.blockPosition = blockPosition;
+    public void setBlockPositionX(int blockPositionX) {
+        this.blockPositionX = blockPositionX;
     }
 
     public int getBlockId() {
@@ -75,5 +90,13 @@ public class Blocks {
 
     public void setBlockId(int blockId) {
         this.blockId = blockId;
+    }
+
+    public int getBlockPositionY() {
+        return blockPositionY;
+    }
+
+    public void setBlockPositionY(int blockPositionY) {
+        this.blockPositionY = blockPositionY;
     }
 }

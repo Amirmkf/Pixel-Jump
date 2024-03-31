@@ -55,4 +55,12 @@ public class Motion {
     public void setMotionDelay(int motionDelay) {
         this.motionDelay = motionDelay;
     }
+
+    public int getMotionIndex() {
+        return motionIndex;
+    }
+
+    public int getMotionTick() {
+        return motionTick;
+    }
 }
