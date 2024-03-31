@@ -25,9 +25,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private final SurfaceHolder holder;
 
-    //    private float velocityY;
-    private float y;
-
     private final Bitmap backgroundBitmap;
     private final Buttons buttons;
 
@@ -75,7 +72,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     public void render() {
 
-//        Canvas background = holder.lockCanvas();
         Canvas background;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -95,27 +91,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             background.drawColor(Color.rgb(216, 189, 155));
         }
 
-        //Draw background
+        //Draw block and enemy
         for (int i = 0; i < blockCount; i++) {
             Blocks block = blocks[i];
             switch (block.getBlockId()) {
                 case 0:
-                    int y = block.getBlockPositionY();
-                    background.drawBitmap(blocks[i].getFallBlock().getSprite(), block.getBlockPositionX(), y, null);
+                    background.drawBitmap(blocks[i].getFallBlock().getSprite(), block.getBlockPositionX(), block.getBlockPositionY(), null);
 
-
-//                    float gravity = 0.5f;
-//                    velocityY += 0.5f;
-
-                    if (i == 0 && y < getHeight()) {
+                    if (i == 0) {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                block.setBlockPositionY(y + 5);
+                                int y = block.getBlockPositionY();
+                                block.setBlockPositionY(y + 1);
 
-                                handler.postDelayed(this, 20);
+                                handler.postDelayed(this, 10);
                             }
-                        }, 20);
+                        }, 1000);
                     }
                     break;
 
@@ -231,15 +223,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 characterActionMotion = mainCharacters.getJumpMotion();
                 characterActionBitmap = characterActionMotion.getSprite();
 
-//                actionDelay++;
-
                 break;
 
             case ATTACK:
                 characterActionMotion = mainCharacters.getAttackMotion();
                 characterActionBitmap = characterActionMotion.getSprite();
-
-//                actionDelay++;
 
                 break;
 
@@ -247,23 +235,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 characterActionMotion = mainCharacters.getDamageMotion();
                 characterActionBitmap = characterActionMotion.getSprite();
 
-//                actionDelay++;
-
                 break;
 
             case DEAD:
                 characterActionMotion = mainCharacters.getDeadMotion();
                 characterActionBitmap = characterActionMotion.getSprite();
 
-//                actionDelay++;
-
                 break;
 
             default:
                 characterActionBitmap = mainCharacters.getIdleMotion().getSprite();
-
-                if (actionDelay != 0)
-                    actionDelay = 0;
         }
 
         if (characterActionMotion != null &&
@@ -272,25 +253,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             characterAction = Actions.IDLE;
         }
 
-        background.drawBitmap(characterActionBitmap, 0, (float) getHeight() / 2 - characterActionBitmap.getHeight(), null);
+        background.drawBitmap(characterActionBitmap, 0, blocks[0].getBlockPositionY() - characterActionBitmap.getHeight(), null);
 
 
         holder.unlockCanvasAndPost(background);
     }
-
-    public void updateAnimation() {
-
-//        float gravity = 0.5f;
-//        velocityY += 0.5f;
-//
-//        y += velocityY;
-//
-//        if (y >= (float) getHeight() / 2 - attackBitmap.getHeight() - 10) {
-//            y = (float) getHeight() / 2 - attackBitmap.getHeight();
-//            velocityY = 0;
-//        }
-    }
-
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -298,8 +265,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         for (int i = 0; i < blockCount; i++) {
             blocks[i].setBlockPositionX(i * getWidth() / (blockCount));
         }
-
-        y = (float) getHeight() / 2;
 
         for (Blocks block : blocks) {
             block.setBlockPositionY(getHeight() / 2);
@@ -337,10 +302,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            velocityY = -.5f;
-            if (actionDelay == 0) {
-                jumpButton(event.getX(), event.getY());
-            }
+//            if (actionDelay == 0) {
+            jumpButton(event.getX(), event.getY());
+//            }
 
             if (characterAction != Actions.JUMP)
                 attackButton(event.getX(), event.getY());
@@ -362,7 +326,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if ((float) getWidth() / 3 - 40 - buttons.getSwordButtonBitmap().getWidth() < x && x < (float) getWidth() / 3 - 60
                 && y < getHeight() - 200 && y > getHeight() - buttons.getSwordButtonBitmap().getHeight() - 200) {
 
-//            actionDelay = 0;
             characterAction = Actions.ATTACK;
 
             handler.removeCallbacks(damageLoop);
@@ -407,7 +370,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
                     // Create a new block and add it to the right
                     blocks[blockCount - 1].setBlockPositionX(getWidth() - (getWidth() / blockCount));
-                    blocks[blockCount - 1].setBlockPositionY(getHeight()/2);
+                    blocks[blockCount - 1].setBlockPositionY(getHeight() / 2);
 
                     //Random block bitmap
                     blocks[blockCount - 1].setBlockId(new Random().nextInt(6));
