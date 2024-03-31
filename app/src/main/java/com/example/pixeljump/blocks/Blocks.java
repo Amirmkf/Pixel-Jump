@@ -15,7 +15,7 @@ public class Blocks {
     private Motion fallBlock;
 
     private int blockPosition;
-    private int blockId = 100;
+    private int blockId = 10; //set big random number for default of switch case
 
     public Blocks(Context context) {
         this.context = context;
@@ -46,7 +46,6 @@ public class Blocks {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.fire_box, options);
 
         fireBlock = new Motion(spriteSheet, 13, 32, 16);
-
     }
 
     public Bitmap getDefaultBlock() {

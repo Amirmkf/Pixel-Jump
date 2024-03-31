@@ -15,7 +15,7 @@ public class Enemy {
         bat = new Bat(context);
         mushroom = new Mushroom(context);
 
-        enemyBlockIndex = 100;
+        enemyBlockIndex = 10; //set big random number for default of switch case
         action = Actions.IDLE;
         enemyMotionDelay = 0;
     }

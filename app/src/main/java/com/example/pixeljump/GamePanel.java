@@ -29,9 +29,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private final Bitmap backgroundBitmap;
     private final Buttons buttons;
-//    private Bitmap jumpButtonBitmap;
-//    private Bitmap shieldButtonBitmap;
-//    private Bitmap gunButtonBitmap;
 
     private final MainCharacters mainCharacters;
 
@@ -43,16 +40,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final int blockCount = 4;
     private final Blocks[] blocks = new Blocks[blockCount];
 
-//    enum actions {IDLE, JUMP, ATTACK, DAMAGE, DEAD}
-
     Actions characterAction = Actions.IDLE;
     private int actionDelay = 0;
 
-    //    private final Mushroom mushroom;
-//    private final Bat bat;
-//    private final int[] enemyBlock = new int[blockCount];
-//    private final actions[] enemyAction = new actions[blockCount];
-//    private int enemyMotionDelay = 0;
     private final Enemy[] enemies = new Enemy[blockCount];
 
     private final Context context;
@@ -64,8 +54,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         this.mainCharacters = new MainCharacters(context);
         this.buttons = new Buttons(context);
-//        this.bat = new Bat(context);
-//        this.mushroom = new Mushroom(context);
 
         for (int i = 0; i < blockCount; i++) {
             blocks[i] = new Blocks(context);
@@ -79,21 +67,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
-//        jumpButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.play, options);
-//        jumpButtonBitmap = Bitmap.createScaledBitmap(jumpButtonBitmap, jumpButtonBitmap.getWidth() * 14, jumpButtonBitmap.getHeight() * 14, false);
-//
-//        shieldButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.shield, options);
-//        shieldButtonBitmap = Bitmap.createScaledBitmap(shieldButtonBitmap, shieldButtonBitmap.getWidth() * 5, shieldButtonBitmap.getHeight() * 5, false);
-//
-//        gunButtonBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gun, options);
-//        gunButtonBitmap = Bitmap.createScaledBitmap(gunButtonBitmap, gunButtonBitmap.getWidth() * 5, gunButtonBitmap.getHeight() * 5, false);
-
         backgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background_brown, options);
-
-
-//        Arrays.fill(blocksBitmap, 3);
-//        Arrays.fill(enemyBlock, 10);
-//        Arrays.fill(enemyAction, actions.IDLE);
     }
 
     public void render() {
@@ -144,15 +118,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                             switch (enemy.getAction()) {
                                 case ATTACK:
                                     batMotion = enemy.getBat().getAttackMotion();
-//                                    batMotion.setMotionDelay(7);
                                     batBitmap = batMotion.getSprite();
-
-//                                    enemyMotionDelay++;
-//
-//                                    if (enemyMotionDelay == batMotion.getMotionNumber() * batMotion.getMotionDelay()) {
-//                                        enemyAction[i] = actions.IDLE;
-//                                        enemyMotionDelay = 0;
-//                                    }
 
                                     break;
 
@@ -186,15 +152,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                             switch (enemy.getAction()) {
                                 case ATTACK:
                                     mushroomMotion = enemy.getMushroom().getAttackMotion();
-//                                    mushroomMotion.setMotionDelay(7);
                                     mushroomBitmap = mushroomMotion.getSprite();
-//
-//                                    enemyMotionDelay++;
-//
-//                                    if (enemyMotionDelay == mushroomMotion.getMotionNumber() * mushroomMotion.getMotionDelay()) {
-//                                        enemyBlock[i] = 10;
-//                                        enemyMotionDelay = 0;
-//                                    }
 
                                     break;
 
@@ -229,90 +187,63 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
+
         //Draw buttons
         buttons.drawJumpButton(background, getWidth(), getHeight());
         buttons.drawShieldButton(background, getWidth(), getHeight());
         buttons.drawSwordButton(background, getWidth(), getHeight());
-//        background.drawBitmap(shieldButtonBitmap,
-//                getWidth() - shieldButtonBitmap.getWidth() - 40
-//                , getHeight() - shieldButtonBitmap.getHeight() - 200, null);
-//
-//        background.drawBitmap(jumpButtonBitmap,
-//                (float) getWidth() / 3 * 2 - jumpButtonBitmap.getWidth() - 40
-//                , getHeight() - jumpButtonBitmap.getHeight() - 200, null);
-//
-//        background.drawBitmap(gunButtonBitmap,
-//                (float) getWidth() / 3 - gunButtonBitmap.getWidth() - 40
-//                , getHeight() - gunButtonBitmap.getHeight() - 200, null);
 
 
         //Draw character base of action
+        Motion characterActionMotion = null;
+        Bitmap characterActionBitmap;
+
         switch (characterAction) {
-            case IDLE:
-                Bitmap idleBitmap = mainCharacters.getIdleMotion().getSprite();
-                background.drawBitmap(idleBitmap, 0, (float) getHeight() / 2 - idleBitmap.getHeight(), null);
-
-                if (actionDelay != 0)
-                    actionDelay = 0;
-
-                break;
-
             case JUMP:
-                Motion jumpMotion = mainCharacters.getJumpMotion();
-                Bitmap jumpBitmap = jumpMotion.getSprite();
-                background.drawBitmap(jumpBitmap, 0, (float) getHeight() / 2 - jumpBitmap.getHeight(), null);
+                characterActionMotion = mainCharacters.getJumpMotion();
+                characterActionBitmap = characterActionMotion.getSprite();
 
                 actionDelay++;
-
-                if (actionDelay == jumpMotion.getMotionNumber() * jumpMotion.getMotionDelay()) {
-                    characterAction = Actions.IDLE;
-                    actionDelay = 0;
-                }
 
                 break;
 
             case ATTACK:
-                Motion attackMotion = mainCharacters.getAttackMotion();
-                Bitmap attackBitmap = attackMotion.getSprite();
-                background.drawBitmap(attackBitmap, 0, (float) getHeight() / 2 - attackBitmap.getHeight(), null);
+                characterActionMotion = mainCharacters.getAttackMotion();
+                characterActionBitmap = characterActionMotion.getSprite();
 
                 actionDelay++;
-
-                if (actionDelay == attackMotion.getMotionNumber() * attackMotion.getMotionDelay()) {
-                    characterAction = Actions.IDLE;
-                    actionDelay = 0;
-                }
 
                 break;
 
             case DAMAGE:
-                Motion damageMotion = mainCharacters.getDamageMotion();
-                Bitmap damageBitmap = damageMotion.getSprite();
-                background.drawBitmap(damageBitmap, 0, (float) getHeight() / 2 - damageBitmap.getHeight(), null);
+                characterActionMotion = mainCharacters.getDamageMotion();
+                characterActionBitmap = characterActionMotion.getSprite();
 
                 actionDelay++;
-
-                if (actionDelay == damageMotion.getMotionNumber() * damageMotion.getMotionDelay()) {
-                    characterAction = Actions.IDLE;
-                    actionDelay = 0;
-                }
 
                 break;
 
             case DEAD:
-                Motion deadMotion = mainCharacters.getDeadMotion();
-                Bitmap deadBitmap = deadMotion.getSprite();
-                background.drawBitmap(deadBitmap, 0, (float) getHeight() / 2 - deadBitmap.getHeight(), null);
+                characterActionMotion = mainCharacters.getDeadMotion();
+                characterActionBitmap = characterActionMotion.getSprite();
 
                 actionDelay++;
 
-                if (actionDelay == deadMotion.getMotionNumber() * deadMotion.getMotionDelay()) {
-                    characterAction = Actions.IDLE;
-                    actionDelay = 0;
-                }
-
                 break;
+
+            default:
+                characterActionBitmap = mainCharacters.getIdleMotion().getSprite();
+
+                if (actionDelay != 0)
+                    actionDelay = 0;
         }
+
+        if (characterActionMotion != null && actionDelay == characterActionMotion.getMotionNumber() * characterActionMotion.getMotionDelay()) {
+            characterAction = Actions.IDLE;
+            actionDelay = 0;
+        }
+
+        background.drawBitmap(characterActionBitmap, 0, (float) getHeight() / 2 - characterActionBitmap.getHeight(), null);
 
 
         holder.unlockCanvasAndPost(background);
@@ -432,13 +363,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 if (blocks[1].getBlockPosition() <= 0) {
                     handler.removeCallbacks(this);
 
-//                    System.arraycopy(blockPositions, 1, blockPositions, 0, blockCount - 1);
-//                    System.arraycopy(blocksBitmap, 1, blocksBitmap, 0, blockCount - 1);
-
                     System.arraycopy(blocks, 1, blocks, 0, blockCount - 1);
-
-//                    System.arraycopy(enemyBlock, 1, enemyBlock, 0, blockCount - 1);
-//                    System.arraycopy(enemyAction, 1, enemyAction, 0, blockCount - 1);
 
                     System.arraycopy(enemies, 1, enemies, 0, blockCount - 1);
 
@@ -472,15 +397,4 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             handler.postDelayed(damageLoop, 1500);
         }
     }
-
-//    private void enemyDamage(int blockIndex) {
-//        if (blockIndex == 1) {
-//            handler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    enemyAction[1] = actions.DAMAGE;
-//                }
-//            }, 500);
-//        }
-//    }
 }
