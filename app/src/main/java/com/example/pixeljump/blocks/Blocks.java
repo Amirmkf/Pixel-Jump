@@ -13,6 +13,10 @@ public class Blocks {
     private Bitmap defaultBlock;
     private Motion fireBlock;
     private Motion fallBlock;
+
+    private int blockPosition;
+    private int blockId = 100;
+
     public Blocks(Context context) {
         this.context = context;
 
@@ -55,5 +59,22 @@ public class Blocks {
 
     public Motion getFireBlock() {
         return fireBlock;
+    }
+
+
+    public int getBlockPosition() {
+        return blockPosition;
+    }
+
+    public void setBlockPosition(int blockPosition) {
+        this.blockPosition = blockPosition;
+    }
+
+    public int getBlockId() {
+        return blockId;
+    }
+
+    public void setBlockId(int blockId) {
+        this.blockId = blockId;
     }
 }
