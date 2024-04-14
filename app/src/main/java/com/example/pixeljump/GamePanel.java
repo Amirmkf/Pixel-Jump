@@ -45,6 +45,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     private final Context context;
 
+    boolean attackDelayFlag = true;
+
     public GamePanel(Context context) {
         super(context);
 
@@ -112,19 +114,25 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     break;
 
                 case 1:
-                    Bitmap fireBlock = blocks[i].getFireBlock().getSprite();
+                    Motion fireBlockMotion = blocks[i].getFireBlock();
+                    fireBlockMotion.setMotionDelay(10);
+                    Bitmap fireBlock = fireBlockMotion.getSprite();
                     fireBlock = Bitmap.createScaledBitmap(fireBlock, fireBlock.getWidth() * 2, fireBlock.getHeight() * 2, false);
 
                     Motion fireMotion = blocks[i].getFire();
+                    fireMotion.setMotionDelay(10);
                     Bitmap fire = fireMotion.getSprite();
                     fire = Bitmap.createScaledBitmap(fire, fire.getWidth() * 2, fire.getHeight() * 2, false);
 
                     background.drawBitmap(fire, block.getBlockPositionX(), (float) getHeight() / 2 - fire.getHeight(), null);
                     background.drawBitmap(fireBlock, block.getBlockPositionX(), (float) getHeight() / 2 - (float) fireBlock.getHeight() / 2, null);
 
-                    if (i == 0 && fireMotion.getMotionIndex() >= 9) {
+                    if (i == 0 && characterAction == Actions.IDLE && fireMotion.getMotionIndex() == 9) {
                         characterAction = Actions.DAMAGE;
-                        mainCharacters.setHealth(mainCharacters.getHealth()-1);
+                        int currentHealth = mainCharacters.getHealth();
+
+                        if (currentHealth > 0)
+                            mainCharacters.setHealth(currentHealth - 1);
                     }
 
                     break;
@@ -208,36 +216,32 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     background.drawBitmap(normalBlock, block.getBlockPositionX(), (float) getHeight() / 2, null);
             }
         }
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
+
+        BitmapFactory.Options healthBarOptions = new BitmapFactory.Options();
+        healthBarOptions.inScaled = false;
+
+        Bitmap healthBar;
+
         switch (mainCharacters.getHealth()) {
             case 1:
-                Bitmap minHealth;
-                minHealth = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_min, options);
-                minHealth = Bitmap.createScaledBitmap(minHealth, minHealth.getWidth() * 8, minHealth.getHeight() * 8, false);
-                background.drawBitmap(minHealth,
-                        25
-                        , 25, null);
+                healthBar = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_min, healthBarOptions);
+
                 break;
+
             case 2:
+                healthBar = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_mide, healthBarOptions);
 
-                Bitmap midHealth;
-                midHealth = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_mide, options);
-                midHealth = Bitmap.createScaledBitmap(midHealth, midHealth.getWidth() * 8, midHealth.getHeight() * 8, false);
-                background.drawBitmap(midHealth,
-                        25
-                        , 25, null);
                 break;
+
             default:
-                Bitmap fullHealth;
-                fullHealth = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_full, options);
-                fullHealth = Bitmap.createScaledBitmap(fullHealth, fullHealth.getWidth() * 8, fullHealth.getHeight() * 8, false);
-                background.drawBitmap(fullHealth,
-                        25
-                        , 25, null);
-                break;
-
+                healthBar = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_full, healthBarOptions);
         }
+
+        healthBar = Bitmap.createScaledBitmap(healthBar, healthBar.getWidth() * 8, healthBar.getHeight() * 8, false);
+        background.drawBitmap(healthBar,
+                25
+                , 25, null);
+
 
         //Draw buttons
         buttons.drawJumpButton(background, getWidth(), getHeight());
@@ -332,12 +336,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//            if (actionDelay == 0) {
-            jumpButton(event.getX(), event.getY());
-//            }
-
-            if (characterAction != Actions.JUMP)
+            if (characterAction != Actions.JUMP) {
+                jumpButton(event.getX(), event.getY());
                 attackButton(event.getX(), event.getY());
+            }
         }
 
         return true;
@@ -420,11 +422,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 if (enemies[1].getAction() != Actions.DEAD && characterAction == Actions.IDLE) {
                     enemies[1].setAction(Actions.ATTACK);
                     characterAction = Actions.DAMAGE;
-                    mainCharacters.setHealth(mainCharacters.getHealth()-1);
+
+                    int currentHealth = mainCharacters.getHealth();
+
+                    if (currentHealth > 0)
+                        mainCharacters.setHealth(currentHealth - 1);
+
+                    attackDelayFlag = true;
                 }
             };
 
-            handler.postDelayed(damageLoop, 1500);
+            if (attackDelayFlag) {
+                handler.postDelayed(damageLoop, 1700);
+                attackDelayFlag = false;
+            }
         }
     }
 
