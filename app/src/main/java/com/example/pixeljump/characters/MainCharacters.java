@@ -16,12 +16,12 @@ public class MainCharacters {
     private Motion damageMotion;
     private Motion idleMotion;
     private Motion deadMotion;
+    private int health = 3;
 
 
     public MainCharacters(Context context) {
         this.context = context;
         options.inScaled = false;
-
         setAttackMotion();
         setDamageMotion();
         setDeadMotion();
@@ -61,6 +61,13 @@ public class MainCharacters {
         this.deadMotion = new Motion(spriteSheet, 8, 32, 29);
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
 
     public Motion getAttackMotion() {
         return attackMotion;

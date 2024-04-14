@@ -124,6 +124,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
                     if (i == 0 && fireMotion.getMotionIndex() >= 9) {
                         characterAction = Actions.DAMAGE;
+                        mainCharacters.setHealth(mainCharacters.getHealth()-1);
                     }
 
                     break;
@@ -207,7 +208,36 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     background.drawBitmap(normalBlock, block.getBlockPositionX(), (float) getHeight() / 2, null);
             }
         }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        switch (mainCharacters.getHealth()) {
+            case 1:
+                Bitmap minHealth;
+                minHealth = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_min, options);
+                minHealth = Bitmap.createScaledBitmap(minHealth, minHealth.getWidth() * 8, minHealth.getHeight() * 8, false);
+                background.drawBitmap(minHealth,
+                        25
+                        , 25, null);
+                break;
+            case 2:
 
+                Bitmap midHealth;
+                midHealth = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_mide, options);
+                midHealth = Bitmap.createScaledBitmap(midHealth, midHealth.getWidth() * 8, midHealth.getHeight() * 8, false);
+                background.drawBitmap(midHealth,
+                        25
+                        , 25, null);
+                break;
+            default:
+                Bitmap fullHealth;
+                fullHealth = BitmapFactory.decodeResource(context.getResources(), R.drawable.health_full, options);
+                fullHealth = Bitmap.createScaledBitmap(fullHealth, fullHealth.getWidth() * 8, fullHealth.getHeight() * 8, false);
+                background.drawBitmap(fullHealth,
+                        25
+                        , 25, null);
+                break;
+
+        }
 
         //Draw buttons
         buttons.drawJumpButton(background, getWidth(), getHeight());
@@ -390,6 +420,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 if (enemies[1].getAction() != Actions.DEAD && characterAction == Actions.IDLE) {
                     enemies[1].setAction(Actions.ATTACK);
                     characterAction = Actions.DAMAGE;
+                    mainCharacters.setHealth(mainCharacters.getHealth()-1);
                 }
             };
 
