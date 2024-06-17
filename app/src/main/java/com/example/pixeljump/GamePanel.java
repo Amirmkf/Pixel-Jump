@@ -39,13 +39,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     private final Blocks[] blocks = new Blocks[blockCount];
 
     Actions characterAction = Actions.IDLE;
-    private int actionDelay = 0;
 
     private final Enemy[] enemies = new Enemy[blockCount];
 
     private final Context context;
 
     boolean attackDelayFlag = true;
+    boolean isDead = false;
 
     public GamePanel(Context context) {
         super(context);
@@ -107,7 +107,16 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                                 int y = block.getBlockPositionY();
                                 block.setBlockPositionY(y + 1);
 
-                                handler.postDelayed(this, 10);
+//                                if (y > getHeight() / 2 + 70)
+//                                    mainCharacters.setHealth(0);
+
+                                if (!isDead){
+                                    mainCharacters.setHealth(0);
+                                }
+
+//                                if (y < getHeight()) {
+                                    handler.postDelayed(this, 10);
+//                                }
                             }
                         }, 1000);
                     }
@@ -243,12 +252,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 , 25, null);
 
 
-        //Draw buttons
-        buttons.drawJumpButton(background, getWidth(), getHeight());
-        buttons.drawShieldButton(background, getWidth(), getHeight());
-        buttons.drawSwordButton(background, getWidth(), getHeight());
-
-
         //Draw character base of action
         Motion characterActionMotion = null;
         Bitmap characterActionBitmap;
@@ -289,6 +292,20 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         background.drawBitmap(characterActionBitmap, 0, blocks[0].getBlockPositionY() - characterActionBitmap.getHeight(), null);
 
+        //Draw game over page
+        if (mainCharacters.getHealth() == 0) {
+            Bitmap gameOver = BitmapFactory.decodeResource(context.getResources(), R.drawable.game_over, healthBarOptions);
+            gameOver = Bitmap.createScaledBitmap(gameOver, getWidth(), getHeight(), false);
+
+            background.drawBitmap(gameOver, 0, 0, null);
+        }
+
+        //Draw buttons
+        buttons.drawJumpButton(background, getWidth(), getHeight());
+        if (mainCharacters.getHealth() > 0) {
+            buttons.drawShieldButton(background, getWidth(), getHeight());
+            buttons.drawSwordButton(background, getWidth(), getHeight());
+        }
 
         holder.unlockCanvasAndPost(background);
     }
@@ -338,7 +355,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (characterAction != Actions.JUMP) {
                 jumpButton(event.getX(), event.getY());
-                attackButton(event.getX(), event.getY());
+
+                if (mainCharacters.getHealth() != 0)
+                    attackButton(event.getX(), event.getY());
             }
         }
 
@@ -351,6 +370,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
             moveBlocks();
             characterAction = Actions.JUMP;
+
+            if (mainCharacters.getHealth() == 0) {
+                mainCharacters.setHealth(3);
+            }
         }
     }
 
