@@ -68,8 +68,6 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         options.inScaled = false;
 
         backgroundBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background_brown, options);
-
-
     }
 
     public void render() {
@@ -97,38 +95,35 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         for (int i = 0; i < blockCount; i++) {
             Blocks block = blocks[i];
             switch (block.getBlockId()) {
-                case 0:
-                    background.drawBitmap(blocks[i].getFallBlock().getSprite(), block.getBlockPositionX(), block.getBlockPositionY(), null);
+                case 0: //FallBlock
+                    background.drawBitmap(block.getFallBlock().getSprite(), block.getBlockPositionX(), block.getBlockPositionY(), null);
 
                     if (i == 0) {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 int y = block.getBlockPositionY();
-                                block.setBlockPositionY(y + 1);
 
-//                                if (y > getHeight() / 2 + 70)
-//                                    mainCharacters.setHealth(0);
-
-                                if (!isDead){
+                                if (y > getHeight() / 2 + 120) {
                                     mainCharacters.setHealth(0);
+                                    block.setBlockPositionY(y + 1);
+                                } else {
+                                    block.setBlockPositionY(y + 3);
                                 }
 
-//                                if (y < getHeight()) {
-                                    handler.postDelayed(this, 10);
-//                                }
                             }
                         }, 1000);
                     }
+
                     break;
 
-                case 1:
-                    Motion fireBlockMotion = blocks[i].getFireBlock();
+                case 1: //FireBlock
+                    Motion fireBlockMotion = block.getFireBlock();
                     fireBlockMotion.setMotionDelay(10);
                     Bitmap fireBlock = fireBlockMotion.getSprite();
                     fireBlock = Bitmap.createScaledBitmap(fireBlock, fireBlock.getWidth() * 2, fireBlock.getHeight() * 2, false);
 
-                    Motion fireMotion = blocks[i].getFire();
+                    Motion fireMotion = block.getFire();
                     fireMotion.setMotionDelay(10);
                     Bitmap fire = fireMotion.getSprite();
                     fire = Bitmap.createScaledBitmap(fire, fire.getWidth() * 2, fire.getHeight() * 2, false);
@@ -147,7 +142,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     break;
 
                 default:
-                    Bitmap normalBlock = blocks[i].getDefaultBlock();
+                    Bitmap normalBlock = block.getDefaultBlock();
                     Enemy enemy = enemies[i];
                     switch (enemy.getEnemyBlockIndex()) {
                         case 0:
