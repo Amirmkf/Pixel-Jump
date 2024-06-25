@@ -10,22 +10,22 @@ import com.example.pixeljump.utils.Motion;
 public class Mushroom {
 
     private final Context context;
-    private final BitmapFactory.Options options = new BitmapFactory.Options();
+    private final BitmapFactory.Options options;
 
     private Motion attackMotion;
     private Motion idleMotion;
     private Motion deadMotion;
 
-
     public Mushroom(Context context) {
         this.context = context;
+
+        options = new BitmapFactory.Options();
         options.inScaled = false;
 
         setAttackMotion();
         setDeadMotion();
         setIdleMotion();
     }
-
 
     private void setAttackMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.mushroom_attack, options);
@@ -44,7 +44,6 @@ public class Mushroom {
 
         this.deadMotion = new Motion(spriteSheet, 4, 37, 25);
     }
-
 
     public Motion getAttackMotion() {
         return attackMotion;

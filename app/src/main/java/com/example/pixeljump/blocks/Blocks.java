@@ -9,11 +9,13 @@ import com.example.pixeljump.utils.Motion;
 
 public class Blocks {
     private final Context context;
+    private final BitmapFactory.Options options;
 
     private Bitmap defaultBlock;
     private Motion fireBlock;
     private Motion fallBlock;
     private Motion fire;
+
     private int blockPositionX;
     private int blockPositionY;
 
@@ -21,6 +23,9 @@ public class Blocks {
 
     public Blocks(Context context) {
         this.context = context;
+
+        options = new BitmapFactory.Options();
+        options.inScaled = false;
 
         setDefaultBlock();
         setFallBlock();
@@ -35,25 +40,18 @@ public class Blocks {
     }
 
     private void setFallBlock() {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
-
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.block_fall, options);
+
         fallBlock = new Motion(spriteSheet, 4, 10, 32);
     }
 
     private void setFireBlock() {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
-
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.fire_box, options);
 
         fireBlock = new Motion(spriteSheet, 13, 32, 16);
     }
-    private  void setFire(){
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
 
+    private void setFire() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.fire, options);
 
         fire = new Motion(spriteSheet, 13, 17, 16);

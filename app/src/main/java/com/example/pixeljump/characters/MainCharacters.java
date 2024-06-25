@@ -9,19 +9,22 @@ import com.example.pixeljump.utils.Motion;
 
 public class MainCharacters {
     private final Context context;
-    private final BitmapFactory.Options options = new BitmapFactory.Options();
+    private final BitmapFactory.Options options;
 
     private Motion attackMotion;
     private Motion jumpMotion;
     private Motion damageMotion;
     private Motion idleMotion;
     private Motion deadMotion;
-    private int health = 3;
 
+    private int health = 3;
 
     public MainCharacters(Context context) {
         this.context = context;
+
+        options = new BitmapFactory.Options();
         options.inScaled = false;
+
         setAttackMotion();
         setDamageMotion();
         setDeadMotion();

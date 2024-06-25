@@ -4,17 +4,14 @@ import android.graphics.Bitmap;
 
 public class Motion {
 
-    private final Bitmap spriteSheet;
     private final int motionNumber;
     private final Bitmap[] sprites;
 
     private int motionDelay = 5;
     private int motionIndex = 0;
-    private int motionTick;
-
+    private int motionTick = 0;
 
     public Motion(Bitmap spriteSheet, int motionNumber, int imageHeight, int motionsWidth) {
-        this.spriteSheet = spriteSheet;
         this.motionNumber = motionNumber;
 
         sprites = new Bitmap[motionNumber];
@@ -25,10 +22,6 @@ public class Motion {
 
     public int getMotionNumber() {
         return motionNumber;
-    }
-
-    public Bitmap getSpriteSheet() {
-        return spriteSheet;
     }
 
     public Bitmap getSprite() {

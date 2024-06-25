@@ -36,20 +36,23 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
     //Blocks in screen
     private final int blockCount = 4;
-    private final Blocks[] blocks = new Blocks[blockCount];
+    private final Blocks[] blocks;
 
     Actions characterAction = Actions.IDLE;
 
-    private final Enemy[] enemies = new Enemy[blockCount];
-
-    private final Context context;
+    private final Enemy[] enemies;
 
     boolean attackDelayFlag = true;
+
+    private final Context context;
 
     public GamePanel(Context context) {
         super(context);
 
         this.context = context;
+
+        blocks = new Blocks[blockCount];
+        enemies = new Enemy[blockCount];
 
         this.mainCharacters = new MainCharacters(context);
         this.buttons = new Buttons(context);
@@ -77,9 +80,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
             for (int i = 0; i < getWidth() / backgroundBitmap.getWidth() + 1; i++) {
                 for (int j = 0; j < getHeight() / backgroundBitmap.getHeight() + 1; j++) {
-                    background.drawBitmap(backgroundBitmap,
-                            i * backgroundBitmap.getWidth()
-                            , j * backgroundBitmap.getHeight(), null);
+                    background.drawBitmap(backgroundBitmap, i * backgroundBitmap.getWidth(), j * backgroundBitmap.getHeight(), null);
                 }
             }
 
@@ -114,13 +115,13 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
                 case 1: //FireBlock
                     Motion fireBlockMotion = block.getFireBlock();
-                    fireBlockMotion.setMotionDelay(10);
+                    fireBlockMotion.setMotionDelay(13);
 
                     Bitmap fireBlock = fireBlockMotion.getSprite();
                     fireBlock = Bitmap.createScaledBitmap(fireBlock, fireBlock.getWidth() * 2, fireBlock.getHeight() * 2, false);
 
                     Motion fireMotion = block.getFire();
-                    fireMotion.setMotionDelay(10);
+                    fireMotion.setMotionDelay(13);
 
                     Bitmap fire = fireMotion.getSprite();
                     fire = Bitmap.createScaledBitmap(fire, fire.getWidth() * 2, fire.getHeight() * 2, false);
@@ -128,12 +129,11 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     background.drawBitmap(fire, block.getBlockPositionX(), (float) getHeight() / 2 - fire.getHeight(), null);
                     background.drawBitmap(fireBlock, block.getBlockPositionX(), (float) getHeight() / 2 - (float) fireBlock.getHeight() / 2, null);
 
-                    if (i == 0 && characterAction == Actions.IDLE && fireMotion.getMotionIndex() == 9) {
+                    if (i == 0 && characterAction == Actions.IDLE && fireMotion.getMotionIndex() >= 9) {
                         characterAction = Actions.DAMAGE;
                         int currentHealth = mainCharacters.getHealth();
 
-                        if (currentHealth > 0)
-                            mainCharacters.setHealth(currentHealth - 1);
+                        if (currentHealth > 0) mainCharacters.setHealth(currentHealth - 1);
                     }
 
                     break;
@@ -141,8 +141,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 default:
                     Bitmap normalBlock = block.getDefaultBlock();
                     Enemy enemy = enemies[i];
-                    switch (enemy.getEnemyBlockIndex()) {
-                        case 0:
+
+                    switch (enemy.getEnemyId()) {
+                        case 0: // Bat Enemy
                             Motion batMotion;
                             Bitmap batBitmap;
 
@@ -157,13 +158,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                                     batMotion = enemy.getBat().getDeadMotion();
                                     batBitmap = batMotion.getSprite();
 
-                                    int enemyMotionDelay = enemy.getEnemyMotionDelay() + 1;
-                                    enemy.setEnemyMotionDelay(enemyMotionDelay);
-
-                                    if (enemyMotionDelay == batMotion.getMotionNumber() * batMotion.getMotionDelay()) {
-                                        enemy.setEnemyBlockIndex(10);
-                                        enemy.setEnemyMotionDelay(0);
-                                    }
+                                    if (batMotion.getMotionIndex() == batMotion.getMotionNumber() - 1)
+                                        enemy.setEnemyId(10);
 
                                     break;
 
@@ -176,7 +172,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                             enemyAttack(i);
                             break;
 
-                        case 1:
+                        case 1: // Mushroom Enemy
                             Motion mushroomMotion;
                             Bitmap mushroomBitmap;
 
@@ -192,15 +188,8 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                                     mushroomMotion.setMotionDelay(10);
                                     mushroomBitmap = mushroomMotion.getSprite();
 
-
-                                    int enemyMotionDelay = enemy.getEnemyMotionDelay() + 1;
-                                    enemy.setEnemyMotionDelay(enemyMotionDelay);
-
-
-                                    if (enemyMotionDelay == mushroomMotion.getMotionNumber() * mushroomMotion.getMotionDelay()) {
-                                        enemy.setEnemyBlockIndex(10);
-                                        enemy.setEnemyMotionDelay(0);
-                                    }
+                                    if (mushroomMotion.getMotionIndex() == mushroomMotion.getMotionNumber() - 1)
+                                        enemy.setEnemyId(10);
 
                                     break;
 
@@ -239,14 +228,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         healthBar = Bitmap.createScaledBitmap(healthBar, healthBar.getWidth() * 8, healthBar.getHeight() * 8, false);
-        background.drawBitmap(healthBar,
-                25
-                , 25, null);
+        background.drawBitmap(healthBar, 25, 25, null);
 
-
-        //Draw character base of action
+        //Draw character by action
         Motion characterActionMotion = null;
         Bitmap characterActionBitmap;
+
         switch (characterAction) {
             case JUMP:
                 characterActionMotion = mainCharacters.getJumpMotion();
@@ -276,9 +263,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                 characterActionBitmap = mainCharacters.getIdleMotion().getSprite();
         }
 
-        if (characterActionMotion != null &&
-                characterActionMotion.getMotionIndex() == characterActionMotion.getMotionNumber() - 1 &&
-                characterActionMotion.getMotionTick() == characterActionMotion.getMotionDelay() - 1) {
+        if (characterActionMotion != null && characterActionMotion.getMotionIndex() == characterActionMotion.getMotionNumber() - 1 && characterActionMotion.getMotionTick() == characterActionMotion.getMotionDelay() - 1) {
             characterAction = Actions.IDLE;
         }
 
@@ -307,40 +292,36 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
         for (int i = 0; i < blockCount; i++) {
             blocks[i].setBlockPositionX(i * getWidth() / (blockCount));
-        }
-
-        for (Blocks block : blocks) {
-            block.setBlockPositionY(getHeight() / 2);
+            blocks[i].setBlockPositionY(getHeight() / 2);
         }
 
         handler = new Handler();
         gameLoop = new Runnable() {
 
-            long lastFPScheck = System.currentTimeMillis();
-            int fps = 0;
+//            long lastFPScheck = System.currentTimeMillis();
+//            int fps = 0;
 
             @Override
             public void run() {
 
                 render();
 
-                fps++;
+//                fps++;
 
-                long now = System.currentTimeMillis();
-                if (now - lastFPScheck >= 1000) {
-                    System.out.println("FPS: " + fps);
-                    fps = 0;
-                    lastFPScheck += 1000;
-                }
+//                long now = System.currentTimeMillis();
+//                if (now - lastFPScheck >= 1000) {
+//                    System.out.println("FPS: " + fps);
+//                    fps = 0;
+//                    lastFPScheck += 1000;
+//                }
 
                 // Schedule next update
-                handler.postDelayed(this, 10);
+                handler.postDelayed(this, 5);
             }
         };
 
         handler.post(gameLoop);
     }
-
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
@@ -348,8 +329,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             if (characterAction != Actions.JUMP) {
                 jumpButton(event.getX(), event.getY());
 
-                if (mainCharacters.getHealth() != 0)
-                    attackButton(event.getX(), event.getY());
+                if (mainCharacters.getHealth() != 0) attackButton(event.getX(), event.getY());
             }
         }
 
@@ -357,8 +337,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void jumpButton(float x, float y) {
-        if (((float) getWidth() / 3 * 2 - buttons.getJumpButtonBitmap().getWidth() - 40) < x && x < ((float) getWidth() / 3 * 2 - 40)
-                && y < getHeight() - 200 && y > getHeight() - buttons.getJumpButtonBitmap().getHeight() - 200) {
+        if (((float) getWidth() / 3 * 2 - buttons.getJumpButtonBitmap().getWidth() - 40) < x && x < ((float) getWidth() / 3 * 2 - 40) && y < getHeight() - 200 && y > getHeight() - buttons.getJumpButtonBitmap().getHeight() - 200) {
 
             moveBlocks();
             characterAction = Actions.JUMP;
@@ -370,14 +349,17 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void attackButton(float x, float y) {
-        if ((float) getWidth() / 3 - 40 - buttons.getSwordButtonBitmap().getWidth() < x && x < (float) getWidth() / 3 - 60
-                && y < getHeight() - 200 && y > getHeight() - buttons.getSwordButtonBitmap().getHeight() - 200) {
+        if ((float) getWidth() / 3 - 40 - buttons.getSwordButtonBitmap().getWidth() < x && x < (float) getWidth() / 3 - 60 && y < getHeight() - 200 && y > getHeight() - buttons.getSwordButtonBitmap().getHeight() - 200) {
 
             characterAction = Actions.ATTACK;
 
             handler.removeCallbacks(damageLoop);
-            if (enemies[1].getEnemyBlockIndex() == 1 || enemies[1].getEnemyBlockIndex() == 0) {
+
+            if (enemies[1].getEnemyId() == 1 || enemies[1].getEnemyId() == 0) {
                 enemies[1].setAction(Actions.DEAD);
+            }
+            if (enemies[0].getEnemyId() == 1 || enemies[0].getEnemyId() == 0) {
+                enemies[0].setAction(Actions.DEAD);
             }
 
         }
@@ -398,7 +380,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             @Override
             public void run() {
                 for (int i = 0; i < blockCount; i++) {
-                    int newPosition = blocks[i].getBlockPositionX() - 7;
+                    int newPosition = blocks[i].getBlockPositionX() - 8;
                     blocks[i].setBlockPositionX(newPosition);
                 }
 
@@ -409,9 +391,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     handler.removeCallbacks(this);
 
                     System.arraycopy(blocks, 1, blocks, 0, blockCount - 1);
-
                     System.arraycopy(enemies, 1, enemies, 0, blockCount - 1);
 
+                    //create new object for last item of array
                     blocks[blockCount - 1] = new Blocks(context);
                     enemies[blockCount - 1] = new Enemy(context);
 
@@ -423,7 +405,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
                     blocks[blockCount - 1].setBlockId(new Random().nextInt(6));
 
                     //random enemy bitmap
-                    enemies[blockCount - 1].setEnemyBlockIndex(new Random().nextInt(5));
+                    enemies[blockCount - 1].setEnemyId(new Random().nextInt(6));
 
                     enemies[blockCount - 1].setAction(Actions.IDLE);
                 }
@@ -440,9 +422,7 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
 
                     int currentHealth = mainCharacters.getHealth();
 
-                    if (currentHealth > 0)
-                        mainCharacters.setHealth(currentHealth - 1);
-
+                    if (currentHealth > 0) mainCharacters.setHealth(currentHealth - 1);
                 }
 
                 attackDelayFlag = true;
@@ -454,5 +434,4 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
     }
-
 }

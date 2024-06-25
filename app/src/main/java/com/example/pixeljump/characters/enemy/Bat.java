@@ -10,23 +10,22 @@ import com.example.pixeljump.utils.Motion;
 public class Bat {
 
     private final Context context;
-    private final BitmapFactory.Options options = new BitmapFactory.Options();
+    private final BitmapFactory.Options options;
 
     private Motion attackMotion;
     private Motion idleMotion;
     private Motion deadMotion;
 
-
     public Bat(Context context) {
         this.context = context;
+
+        options = new BitmapFactory.Options();
         options.inScaled = false;
 
         setAttackMotion();
         setDeadMotion();
         setIdleMotion();
     }
-    // خب اینجا باید یه متغییر ایجاد کنیم که اگه کارکتر روی بلاک انمی ایستاد موشن اتک داخلش ریخته شه اگه رو بلاکش نبود حالت ایدل باشه
-
 
     private void setAttackMotion() {
         Bitmap spriteSheet = BitmapFactory.decodeResource(context.getResources(), R.drawable.bat_attack, options);
@@ -46,7 +45,6 @@ public class Bat {
         this.deadMotion = new Motion(spriteSheet, 11, 69, 62);
     }
 
-
     public Motion getAttackMotion() {
         return attackMotion;
     }
@@ -58,5 +56,4 @@ public class Bat {
     public Motion getDeadMotion() {
         return deadMotion;
     }
-
 }

@@ -7,7 +7,8 @@ import com.example.pixeljump.characters.Actions;
 public class Enemy {
     private final Bat bat;
     private final Mushroom mushroom;
-    private int enemyBlockIndex;
+
+    private int enemyId;
     private Actions action;
     private int enemyMotionDelay;
 
@@ -15,7 +16,7 @@ public class Enemy {
         bat = new Bat(context);
         mushroom = new Mushroom(context);
 
-        enemyBlockIndex = 10; //set big random number for default of switch case
+        enemyId = 10; //set big random number for default of switch case
         action = Actions.IDLE;
         enemyMotionDelay = 0;
     }
@@ -28,12 +29,12 @@ public class Enemy {
         return mushroom;
     }
 
-    public int getEnemyBlockIndex() {
-        return enemyBlockIndex;
+    public int getEnemyId() {
+        return enemyId;
     }
 
-    public void setEnemyBlockIndex(int enemyBlockIndex) {
-        this.enemyBlockIndex = enemyBlockIndex;
+    public void setEnemyId(int enemyId) {
+        this.enemyId = enemyId;
     }
 
     public Actions getAction() {
